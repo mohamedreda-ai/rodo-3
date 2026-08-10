@@ -1,226 +1,582 @@
+/* ==========================================================================
+   VARIABLES & ROOT
+   ========================================================================== */
 :root {
-            --bg-base: #050505;
-            --bg-surface: #111112;
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent-blue: #0A84FF;
-        }
+    --bg-base: #050505;
+    --bg-surface: #111112;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent-blue: #0A84FF;
+    --nav-height: calc(4.5rem + env(safe-area-inset-bottom));
+}
 
-        body {
-            font-family: 'Alexandria', sans-serif;
-            background-color: var(--bg-base);
-            color: #F5F5F7;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none;
-        }
-        
-        ::selection { background-color: rgba(10, 132, 255, 0.3); }
+/* ==========================================================================
+   BASE RESETS & MOBILE-FIRST FOUNDATION
+   ========================================================================== */
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none; /* App-like feel, prevents pull-to-refresh bounce */
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
+body { 
+    font-family: 'Alexandria', sans-serif;
+    background-color: var(--bg-base);
+    color: #F5F5F7;
+    -webkit-tap-highlight-color: transparent;
+    padding-bottom: var(--nav-height); /* Ensure content isn't hidden behind mobile nav */
+}
 
-        .view-section { display: none; }
-        .view-section.active {
-            display: block;
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+::selection { 
+    background-color: rgba(10, 132, 255, 0.3); 
+}
 
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* Prevent iOS Zoom on Inputs & Enforce 16px Base */
+input, textarea, select {
+    min-width: 0;
+    font-size: 16px !important;
+}
 
-        .glass-panel {
-            background: rgba(20, 20, 22, 0.6);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-        }
+/* 
+  MOBILE-FIRST TOUCH TARGETS (Thumb Zone Optimization)
+  Enforce minimum 48x48px for all interactive elements 
+*/
+button, 
+.btn-press,
+input[type="text"], 
+input[type="number"], 
+select, 
+textarea,
+.prio-btn,
+header .min-h-\[44px\],
+.min-h-\[44px\] {
+    min-height: 48px !important;
+    min-width: 48px !important;
+}
 
-        .btn-press:active { transform: scale(0.95); transition: transform 0.1s; }
-        
-        .ambient-glow {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: -1;
-            opacity: 0.35;
-            pointer-events: none;
-        }
+/* ==========================================================================
+   ANIMATIONS & KEYFRAMES
+   ========================================================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
-        @keyframes toastEnter {
-            from { opacity: 0; transform: translateY(-20px) translateX(-50%); }
-            to { opacity: 1; transform: translateY(0) translateX(-50%); }
-        }
-        @keyframes toastLeave {
-            from { opacity: 1; transform: translateY(0) translateX(-50%); }
-            to { opacity: 0; transform: translateY(-20px) translateX(-50%); }
-        }
-        .toast-enter { animation: toastEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .toast-leave { animation: toastLeave 0.4s ease-in forwards; }
+@keyframes toastEnter {
+    from { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+    to { opacity: 1; transform: translateY(0) translateX(-50%); }
+}
 
-        /* Random Event Animation */
-        @keyframes eventGlow {
-            0%, 100% { filter: drop-shadow(0 0 20px currentColor); transform: scale(1); }
-            50% { filter: drop-shadow(0 0 40px currentColor); transform: scale(1.1); }
-        }
-        .anim-event-icon { animation: eventGlow 2s ease-in-out infinite; }
-        
-        /* Stats Progress bars */
-        .stat-bar-fill { transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
-        
-        /* Avatar Lock Overlay */
-        .locked-avatar {
-            filter: grayscale(100%) brightness(0.6);
-            pointer-events: none;
-        }
+@keyframes toastLeave {
+    from { opacity: 1; transform: translateY(0) translateX(-50%); }
+    to { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+}
 
-        /* Zen mode transitions */
-        .zen-active {
-            opacity: 1 !important;
-            pointer-events: auto !important;
-        }
+@keyframes eventGlow {
+    0%, 100% { filter: drop-shadow(0 0 20px currentColor); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 40px currentColor); transform: scale(1.1); }
+}
 
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); opacity: 0.15; }
-            50% { transform: scale(1.1); opacity: 0.3; }
-        }
-        .zen-breathing-bg {
-            animation: pulseGlow 6s ease-in-out infinite;
-        }
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 0.15; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+}
 
-        /* Achievements premium lighting */
-        .achievement-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .achievement-card::after {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
-            transform: rotate(45deg);
-            transition: all 0.5s ease;
-        }
-        .achievement-card:hover::after {
-            left: 120%;
-        }
+@keyframes modalPop {
+    0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
 
-        /* Modals Animations */
-        @keyframes modalPop {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .modal-animate-enter {
-            animation: modalPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .modal-overlay-enter {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
+@keyframes splashContainer {
+    0%, 80% { opacity: 1; visibility: visible; }
+    100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
 
-        /* Focus Section Polish */
-        .focus-panel {
-            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-        }
-        .focus-panel:nth-child(1) { animation-delay: 0.05s; }
-        .focus-panel:nth-child(2) { animation-delay: 0.1s; }
-        .focus-panel:nth-child(3) { animation-delay: 0.15s; }
-        .focus-panel:nth-child(4) { animation-delay: 0.2s; }
-        .focus-panel:nth-child(5) { animation-delay: 0.25s; }
+@keyframes splashGlow {
+    0% { opacity: 0; transform: scale(0.8); }
+    20% { opacity: 0.4; transform: scale(1); }
+    80% { opacity: 0.4; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(1.15); }
+}
 
-        .insight-card {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .insight-card:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
+@keyframes splashLogo {
+    0% { opacity: 0; transform: scale(0.92); filter: blur(12px); }
+    20% { opacity: 1; transform: scale(1); filter: blur(0px); }
+    80% { opacity: 1; transform: scale(1.03); filter: blur(0px); }
+    100% { opacity: 0; transform: scale(1.05); filter: blur(8px); }
+}
 
-        .session-item {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .session-item:hover {
-            transform: translateX(-4px);
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
+@keyframes splashTagline {
+    0%, 20% { opacity: 0; transform: translateY(15px); }
+    40% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
 
-        .heatmap-scroll {
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-        }
-        .heatmap-scroll > div {
-            scroll-snap-align: end;
-        }
-        
-        .timer-glow {
-            text-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
-            transition: text-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s ease;
-        }
-        .timer-glow.timer-running {
-            text-shadow: 0 0 50px rgba(249, 115, 22, 0.6);
-            color: #fff;
-        }
+/* ==========================================================================
+   CORE COMPONENTS & UTILITIES
+   ========================================================================== */
+.view-section { 
+    display: none; 
+}
 
-        .btn-focus-action {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .btn-focus-action:not(.opacity-50):hover {
-            transform: scale(1.08);
-        }
-        .btn-focus-action:not(.opacity-50):active {
-            transform: scale(0.92);
-        }
+.view-section.active {
+    display: block;
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
-        /* Premium Splash Screen */
-        #splash-screen {
-            animation: splashContainer 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            will-change: opacity, visibility;
-        }
+.hide-scrollbar::-webkit-scrollbar { 
+    display: none; 
+}
 
-        #splash-screen .absolute {
-            will-change: transform, opacity;
-            animation: splashGlow 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
+.hide-scrollbar { 
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+}
 
-        #splash-screen img {
-            will-change: transform, opacity, filter;
-            animation: splashLogo 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
+.glass-panel {
+    background: rgba(20, 20, 22, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem; /* App-like rounded corners */
+    contain: content; /* Performance optimization */
+}
 
-        #splash-screen p {
-            will-change: transform, opacity;
-            animation: splashTagline 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
+.btn-press {
+    touch-action: manipulation;
+}
 
-        @keyframes splashContainer {
-            0%, 80% { opacity: 1; visibility: visible; }
-            100% { opacity: 0; visibility: hidden; pointer-events: none; }
-        }
+.btn-press:active { 
+    transform: scale(0.95); 
+    transition: transform 0.1s; 
+}
 
-        @keyframes splashGlow {
-            0% { opacity: 0; transform: scale(0.8); }
-            20% { opacity: 0.4; transform: scale(1); }
-            80% { opacity: 0.4; transform: scale(1.1); }
-            100% { opacity: 0; transform: scale(1.15); }
-        }
+.ambient-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: -1;
+    opacity: 0.35;
+    pointer-events: none;
+}
 
-        @keyframes splashLogo {
-            0% { opacity: 0; transform: scale(0.92); filter: blur(12px); }
-            20% { opacity: 1; transform: scale(1); filter: blur(0px); }
-            80% { opacity: 1; transform: scale(1.03); filter: blur(0px); }
-            100% { opacity: 0; transform: scale(1.05); filter: blur(8px); }
-        }
+/* ==========================================================================
+   MOBILE-FIRST LAYOUT OVERRIDES (Default = Mobile < 480px)
+   ========================================================================== */
 
-        @keyframes splashTagline {
-            0%, 20% { opacity: 0; transform: translateY(15px); }
-            40% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
-        }
+/* 1. App Header */
+header {
+    padding-top: env(safe-area-inset-top) !important;
+    background: rgba(5, 5, 5, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+header .px-4 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+header .px-3 {
+    padding-left: 0.375rem !important;
+    padding-right: 0.375rem !important;
+}
+
+header .flex-col,
+header .flex-col .flex {
+    min-width: 0;
+}
+
+header .gap-3 { gap: 0.375rem !important; }
+header .gap-1\.5 { gap: 0.25rem !important; }
+
+#ui-header-name { 
+    max-width: 75px; 
+    font-size: 0.875rem; 
+}
+
+header .text-xs { font-size: 0.65rem; }
+
+/* 2. Bottom Navigation (Native App Style) */
+nav.fixed.bottom-4 {
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom)) 0.5rem !important;
+    background: rgba(10, 10, 12, 0.9) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5) !important;
+    gap: 0.25rem !important;
+}
+
+nav.fixed.bottom-4 button {
+    min-width: 3.5rem !important;
+    min-height: 56px !important; /* Taller touch target for bottom nav */
+    padding-left: 0.125rem !important;
+    padding-right: 0.125rem !important;
+}
+
+/* 3. Forms & Inputs (Mobile Wrapping) */
+#view-schedule form,
+#view-store form,
+#modal-save-session-content .flex.gap-2 {
+    flex-wrap: wrap !important;
+}
+
+#new-schedule-title,
+#view-schedule form > div,
+#new-reward-input,
+#new-study-subject-input {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+}
+
+/* 4. Grids (Single Column Default) */
+#ui-avatar-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+#smart-insights-container {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+#modal-daily-recap-content .grid {
+    gap: 0.5rem !important;
+}
+
+#modal-daily-recap-content .p-4 {
+    padding: 0.75rem !important;
+}
+
+/* 5. Focus Timer Scaling */
+#view-focus .w-64 { width: 14rem !important; }
+#view-focus .h-64 { height: 14rem !important; }
+#stopwatch-display { font-size: 2.75rem !important; }
+#view-focus .gap-4 { gap: 0.75rem !important; }
+
+/* 6. Weakness Priority Buttons */
+.prio-btn {
+    font-size: 0.65rem !important;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+}
+
+/* ==========================================================================
+   SPECIFIC COMPONENT STYLES
+   ========================================================================== */
+.toast-enter { 
+    animation: toastEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+}
+
+.toast-leave { 
+    animation: toastLeave 0.4s ease-in forwards; 
+}
+
+#toast-container {
+    width: calc(100% - 2rem);
+    max-width: 24rem;
+    left: 50%;
+    transform: translateX(-50%);
+    top: calc(1rem + env(safe-area-inset-top));
+}
+
+#toast-container > div {
+    position: relative;
+    left: 50%;
+}
+
+.anim-event-icon {
+    animation: eventGlow 2s ease-in-out infinite; 
+}
+
+.stat-bar-fill { 
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+
+/* New Statistics Chart Transitions */
+.stat-bar-vertical {
+    transition: height 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-donut-segment {
+    transition: stroke-dasharray 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.locked-avatar {
+    filter: grayscale(100%) brightness(0.6);
+    pointer-events: none;
+}
+
+.zen-active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.zen-breathing-bg {
+    animation: pulseGlow 6s ease-in-out infinite;
+}
+
+.achievement-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.achievement-card::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s ease;
+}
+
+.achievement-card:hover::after {
+    left: 120%;
+}
+
+.modal-animate-enter {
+    animation: modalPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-overlay-enter {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Modals Sizing & Overflow */
+[id^="modal-"] > div {
+    max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-width: calc(100vw - 2rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.focus-panel {
+    animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.focus-panel:nth-child(1) { animation-delay: 0.05s; }
+.focus-panel:nth-child(2) { animation-delay: 0.1s; }
+.focus-panel:nth-child(3) { animation-delay: 0.15s; }
+.focus-panel:nth-child(4) { animation-delay: 0.2s; }
+.focus-panel:nth-child(5) { animation-delay: 0.25s; }
+
+.insight-card {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.insight-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.session-item {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.session-item:hover {
+    transform: translateX(-4px);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.heatmap-scroll {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.heatmap-scroll > div {
+    scroll-snap-align: end;
+}
+
+.timer-glow {
+    text-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+    transition: text-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s ease;
+}
+
+.timer-glow.timer-running {
+    text-shadow: 0 0 50px rgba(249, 115, 22, 0.6);
+    color: #fff;
+}
+
+.btn-focus-action {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-focus-action:not(.opacity-50):hover {
+    transform: scale(1.08);
+}
+
+.btn-focus-action:not(.opacity-50):active {
+    transform: scale(0.92);
+}
+
+/* Premium Splash Screen */
+#splash-screen {
+    animation: splashContainer 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    will-change: opacity, visibility;
+}
+#splash-screen .absolute {
+    will-change: transform, opacity;
+    animation: splashGlow 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+img[alt*="Logo"] {
+    object-fit: contain !important;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+header img[alt*="Logo"] {
+    width: clamp(2.5rem, 6vw, 3.5rem) !important;
+    height: clamp(2.5rem, 6vw, 3.5rem) !important;
+}
+
+#splash-screen img {
+    width: clamp(10rem, 28vmin, 18rem) !important;
+    height: clamp(10rem, 28vmin, 18rem) !important;
+    max-width: 90vw;
+    will-change: transform, opacity, filter;
+    animation: splashLogo 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+#splash-screen p {
+    will-change: transform, opacity;
+    animation: splashTagline 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ==========================================================================
+   PROGRESSIVE ENHANCEMENT (Tablets & Desktops)
+   ========================================================================== */
+
+/* Tablet / Large Mobile (Min 480px) */
+@media (min-width: 480px) {
+    header .px-4 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    header .px-3 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    
+    header .gap-3 { gap: 0.75rem !important; }
+    header .gap-1\.5 { gap: 0.5rem !important; }
+    
+    #ui-header-name { 
+        max-width: 150px; 
+        font-size: 1.125rem; 
+    }
+    
+    #view-focus .w-64 { width: 16rem !important; }
+    #view-focus .h-64 { height: 16rem !important; }
+    #stopwatch-display { font-size: 3.5rem !important; }
+    
+    #smart-insights-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+    
+    #modal-daily-recap-content .grid { gap: 0.75rem !important; }
+    #modal-daily-recap-content .p-4 { padding: 1rem !important; }
+}
+
+/* Desktop / Large Tablet (Min 768px) */
+@media (min-width: 768px) {
+    /* Restore Bottom Nav to a floating pill */
+    nav.fixed.bottom-4 {
+        bottom: 1.5rem !important;
+        width: calc(100% - 2rem) !important;
+        max-width: 42rem !important;
+        border-radius: 1.5rem !important;
+        padding: 0.5rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+
+    /* Restore Form Layouts */
+    #view-schedule form,
+    #view-store form,
+    #modal-save-session-content .flex.gap-2 {
+        flex-wrap: nowrap !important;
+    }
+    
+    #new-schedule-title,
+    #new-reward-input,
+    #new-study-subject-input {
+        flex: 1 1 auto !important;
+        width: auto !important;
+    }
+    
+    #view-schedule form > div {
+        flex: 0 0 auto !important;
+        width: auto !important;
+    }
+
+    /* Expand Grids */
+    #ui-avatar-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+    
+    #smart-insights-container {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+
+    /* Expand Focus Timer */
+    #view-focus .w-64 { width: 18rem !important; }
+    #view-focus .h-64 { height: 18rem !important; }
+    #stopwatch-display { font-size: 4rem !important; }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY & PERFORMANCE OPTIMIZATIONS
+   ========================================================================== */
+
+/* Ensure keyboard users can see focus, overriding focus:outline-none */
+:focus-visible {
+    outline: 2px solid var(--accent-blue) !important;
+    outline-offset: 2px !important;
+    border-radius: inherit;
+}
+/* ==========================================================================
+   EMERGENCY SCROLL UNLOCK (FIX FOR MOBILE)
+   ========================================================================== */
+html {
+    height: -webkit-fill-available;
+}
+
+body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+    overscroll-behavior-y: auto !important;
+}
+
+/* إلغاء أي تقييد للارتفاع على الحاويات الرئيسية */
+#app, 
+main, 
+.view-section,
+.view-section.active {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: visible !important;
+}
