@@ -19,29 +19,45 @@ function escapeHTML(str) {
         .replace(/'/g, '&#39;');
 }
 
-// FIX 1: Timezone Shift Data Corruption Helper
 function getLocalDateStr(dateObj = new Date()) {
     const offset = dateObj.getTimezoneOffset() * 60000;
     return new Date(dateObj.getTime() - offset).toISOString().split('T')[0];
 }
 
-const DEFAULT_REWARDS = [
-    { id: 1, title: 'مشاهدة حلقة من الأنمي/المسلسل', cost: 200 },
-    { id: 2, title: 'تصفح السوشيال ميديا 30 دقيقة', cost: 150 },
-    { id: 3, title: 'جلسة جيمنج (ساعة كاملة)', cost: 400 },
-    { id: 4, title: 'أكلة حلوة خارج الدايت', cost: 300 }
-];
+const STORE_CATALOG = [
+    // Boosts
+    { id: 'boost_xp_1', title: 'مضاعف الخبرة (ساعة)', desc: 'يضاعف نقاط الخبرة المكتسبة 1.5x لمدة ساعة.', cost: 150, category: 'boosts', icon: 'zap', rarity: 'rare', type: 'boost', boostType: 'xp', multiplier: 1.5, duration: 60 * 60 * 1000 },
+    { id: 'boost_coin_1', title: 'مضاعف الذهب (ساعة)', desc: 'يضاعف العملات المكتسبة 1.5x لمدة ساعة.', cost: 150, category: 'boosts', icon: 'coins', rarity: 'rare', type: 'boost', boostType: 'coin', multiplier: 1.5, duration: 60 * 60 * 1000 },
+    { id: 'boost_xp_2', title: 'إكسير الخبرة الأسطوري', desc: 'يضاعف نقاط الخبرة 2x لمدة 3 ساعات.', cost: 400, category: 'boosts', icon: 'flask-conical', rarity: 'epic', type: 'boost', boostType: 'xp', multiplier: 2, duration: 3 * 60 * 60 * 1000 },
+    
+    // Themes
+    { id: 'theme_crimson', title: 'طاقة القرمزي', desc: 'مظهر أحمر ناري يعكس الحماس والطاقة.', cost: 500, category: 'themes', icon: 'palette', rarity: 'epic', type: 'theme' },
+    { id: 'theme_emerald', title: 'هالة الزمرد', desc: 'مظهر أخضر هادئ يساعد على التركيز.', cost: 500, category: 'themes', icon: 'palette', rarity: 'epic', type: 'theme' },
+    { id: 'theme_cyber', title: 'سايبر نيون', desc: 'مظهر مستقبلي عالي التباين.', cost: 800, category: 'themes', icon: 'palette', rarity: 'legendary', type: 'theme' },
+    { id: 'theme_gold', title: 'بريق الذهب', desc: 'مظهر ذهبي ملكي للأساطير فقط.', cost: 1000, category: 'themes', icon: 'palette', rarity: 'legendary', type: 'theme' },
 
-const MAGIC_SHOP_ITEMS = [
-    { id: 'xp_potion_small', title: 'جرعة الحكمة الصغرى', desc: 'تمنحك 150 XP فوراً.', cost: 250, icon: 'flask-conical', bg: 'bg-purple-500/10 border-purple-500/30 text-purple-400', hover: 'hover:bg-purple-500/20' },
-    { id: 'focus_scroll', title: 'لفيفة التركيز', desc: 'تضيف 60 دقيقة تركيز لسجلك.', cost: 400, icon: 'scroll', bg: 'bg-blue-500/10 border-blue-500/30 text-blue-400', hover: 'hover:bg-blue-500/20' },
-    { id: 'xp_potion', title: 'إكسير الحكمة', desc: 'تمنحك 300 XP فوراً.', cost: 500, icon: 'flask-conical', bg: 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-400', hover: 'hover:bg-fuchsia-500/20' },
-    { id: 'streak_shield', title: 'درع الاستمرارية', desc: 'يزيد سلسلة أيام متتالية (+3 أيام).', cost: 600, icon: 'shield', bg: 'bg-orange-500/10 border-orange-500/30 text-orange-400', hover: 'hover:bg-orange-500/20' },
-    { id: 'mystery_box', title: 'صندوق الغموض', desc: 'مكافأة عشوائية ضخمة (XP أو تركيز أو ذهب).', cost: 750, icon: 'package-open', bg: 'bg-pink-500/10 border-pink-500/30 text-pink-400', hover: 'hover:bg-pink-500/20' },
-    { id: 'time_freeze', title: 'ساعة الزمن', desc: 'دفعة مزدوجة: 500 XP و 100 دقيقة تركيز.', cost: 1200, icon: 'hourglass', bg: 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400', hover: 'hover:bg-cyan-500/20' },
-    { id: 'phoenix_feather', title: 'ريشة العنقاء', desc: 'طاقة نقية تمنحك 1000 XP للارتقاء السريع.', cost: 2000, icon: 'feather', bg: 'bg-amber-500/10 border-amber-500/30 text-amber-400', hover: 'hover:bg-amber-500/20' },
-    { id: 'golden_ticket', title: 'التذكرة الذهبية', desc: 'مكافأة "يوم إجازة حر" تُضاف فوراً في مخزونك.', cost: 2500, icon: 'ticket', bg: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400', hover: 'hover:bg-yellow-500/20' },
-    { id: 'crown_of_king', title: 'تاج الأساطير', desc: 'دفعة أسطورية: 2000 XP و 200 دقيقة تركيز.', cost: 5000, icon: 'crown', bg: 'bg-yellow-400/10 border-yellow-400/50 text-yellow-300 shadow-[0_0_15px_rgba(250,204,21,0.15)]', hover: 'hover:bg-yellow-400/20 hover:shadow-[0_0_25px_rgba(250,204,21,0.3)]' }
+    // Effects
+    { id: 'effect_task_1', title: 'نبضة الإنجاز', desc: 'تأثير بصري عند إكمال المهام.', cost: 300, category: 'effects', icon: 'sparkles', rarity: 'rare', type: 'effect', effectEvent: 'task-complete' },
+    { id: 'effect_focus_1', title: 'توهج التركيز', desc: 'توهج ذهبي عند إنهاء جلسة تركيز.', cost: 500, category: 'effects', icon: 'flame', rarity: 'epic', type: 'effect', effectEvent: 'focus-complete' },
+    { id: 'effect_achieve_1', title: 'احتفال الأساطير', desc: 'تأثير خاص عند فتح إنجاز جديد.', cost: 600, category: 'effects', icon: 'party-popper', rarity: 'legendary', type: 'effect', effectEvent: 'achievement-unlock' },
+    { id: 'effect_streak_1', title: 'شعلة الاستمرارية', desc: 'تأثير ناري عند زيادة أيام الاستمرارية.', cost: 400, category: 'effects', icon: 'flame', rarity: 'epic', type: 'effect', effectEvent: 'streak' },
+
+    // Titles
+    { id: 'title_1', title: 'لقب: المثابر', desc: 'لقب يظهر بجانب اسمك.', cost: 300, category: 'titles', icon: 'award', rarity: 'rare', type: 'title', label: 'المثابر' },
+    { id: 'title_2', title: 'لقب: سيد التركيز', desc: 'لقب يظهر بجانب اسمك.', cost: 600, category: 'titles', icon: 'award', rarity: 'epic', type: 'title', label: 'سيد التركيز' },
+    { id: 'title_3', title: 'لقب: الأسطورة', desc: 'اللقب الأعظم على الإطلاق.', cost: 1500, category: 'titles', icon: 'crown', rarity: 'legendary', type: 'title', label: 'الأسطورة' },
+
+    // Avatars
+    { id: 'avatar_premium_1', title: 'أفاتار: فارس الظلام', desc: 'شخصية حصرية لا تفتح إلا بالذهب.', cost: 1200, category: 'avatars', icon: 'user-circle', rarity: 'legendary', type: 'avatar', avatarId: 9 },
+
+    // Mystery
+    { id: 'mystery_small', title: 'صندوق الغموض الصغير', desc: 'قد يحتوي على ذهب، خبرة، أو معززات.', cost: 200, category: 'mystery', icon: 'box', rarity: 'rare', type: 'mystery', pool: 'small' },
+    { id: 'mystery_epic', title: 'صندوق الأساطير', desc: 'مكافآت ضخمة وفرصة لربح ألقاب حصرية.', cost: 800, category: 'mystery', icon: 'gift', rarity: 'legendary', type: 'mystery', pool: 'epic' },
+
+    // Power-ups (Instant Consumables)
+    { id: 'power_xp_1', title: 'جرعة الحكمة', desc: 'تمنحك 200 XP فوراً.', cost: 250, category: 'powerups', icon: 'flask-round', rarity: 'common', type: 'instant', grantXp: 200 },
+    { id: 'power_focus_1', title: 'لفيفة الزمن', desc: 'تضيف 60 دقيقة لسجل تركيزك.', cost: 400, category: 'powerups', icon: 'scroll', rarity: 'rare', type: 'instant', grantFocus: 60 },
+    { id: 'power_streak_1', title: 'درع الاستمرارية', desc: 'يحميك من فقدان السلسلة (يضيف 3 أيام).', cost: 600, category: 'powerups', icon: 'shield', rarity: 'epic', type: 'instant', grantStreak: 3 }
 ];
 
 const STAGES = [
@@ -74,7 +90,8 @@ const AVATARS_DATA = [
     { id: 5, reqLvl: 5, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#0f172a"/><circle cx="50" cy="65" r="28" fill="#e2e8f0"/><path d="M15 50 L30 10 L40 30 L50 5 L60 30 L70 10 L85 50 Z" fill="#38bdf8"/><rect x="20" y="52" width="60" height="12" rx="6" fill="#000"/><rect x="24" y="55" width="52" height="6" rx="3" fill="#06b6d4"/><circle cx="85" cy="58" r="3" fill="#38bdf8"/></svg>` },
     { id: 6, reqLvl: 5, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#4c1d95"/><circle cx="50" cy="65" r="26" fill="#f3e8ff"/><circle cx="25" cy="35" r="15" fill="#d946ef"/><circle cx="75" cy="35" r="15" fill="#d946ef"/><path d="M35 30 Q50 20 65 30 Z" fill="#d946ef"/><path d="M25 65 L45 50 L50 55 L55 50 L75 65 L60 70 L40 70 Z" fill="#000"/><path d="M30 63 L43 54 M70 63 L57 54" stroke="#f0abfc" stroke-width="3"/></svg>` },
     { id: 7, reqLvl: 10, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#7f1d1d"/><circle cx="50" cy="65" r="28" fill="#ffedd5"/><path d="M20 60 C 20 0, 50 20, 50 10 C 50 20, 80 0, 80 60 Z" fill="#f97316"/><path d="M30 60 C 30 20, 50 30, 50 25 C 50 30, 70 20, 70 60 Z" fill="#fef08a"/><path d="M22 55 L78 55 L65 70 L35 70 Z" fill="#000"/><path d="M25 57 L75 57" stroke="#ef4444" stroke-width="2"/></svg>` },
-    { id: 8, reqLvl: 10, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#064e3b"/><circle cx="50" cy="65" r="26" fill="#ecfdf5"/><path d="M20 90 C15 30 85 30 80 90 Z" fill="#10b981"/><path d="M30 40 L40 25 L50 35 L60 25 L70 40 Z" fill="#fbbf24"/><circle cx="36" cy="58" r="14" fill="#000"/><circle cx="64" cy="58" r="14" fill="#000"/><path d="M36 58 L36 58 M64 58 L64 58" stroke="#34d399" stroke-width="8" stroke-linecap="round"/><path d="M48 58 L52 58" stroke="#000" stroke-width="3"/></svg>` }
+    { id: 8, reqLvl: 10, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#064e3b"/><circle cx="50" cy="65" r="26" fill="#ecfdf5"/><path d="M20 90 C15 30 85 30 80 90 Z" fill="#10b981"/><path d="M30 40 L40 25 L50 35 L60 25 L70 40 Z" fill="#fbbf24"/><circle cx="36" cy="58" r="14" fill="#000"/><circle cx="64" cy="58" r="14" fill="#000"/><path d="M36 58 L36 58 M64 58 L64 58" stroke="#34d399" stroke-width="8" stroke-linecap="round"/><path d="M48 58 L52 58" stroke="#000" stroke-width="3"/></svg>` },
+    { id: 9, reqLvl: 999, reqItem: 'avatar_premium_1', type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#1e1b4b"/><circle cx="50" cy="65" r="28" fill="#c4b5fd"/><path d="M20 90 C20 40 80 40 80 90 Z" fill="#0f172a"/><path d="M35 30 L50 10 L65 30 Z" fill="#8b5cf6"/><circle cx="35" cy="55" r="8" fill="#fde047"/><circle cx="65" cy="55" r="8" fill="#fde047"/></svg>` }
 ];
 
 const DEFAULT_HABITS = [
@@ -107,7 +124,7 @@ const INITIAL_STATE = {
     streak: 0,
     bestStreak: 0,
     totalFocusMinutes: 0,
-    rewards: [...DEFAULT_REWARDS],
+    rewards: [],
     stats: { study: 0, solve: 0, review: 0, life: 0 },
     lessons: [],
     studyPlan: [],
@@ -123,13 +140,23 @@ const INITIAL_STATE = {
     weaknesses: [],
     studySubjects: [],
     activeSession: { isRunning: false, startTime: null, elapsedMs: 0 },
-    heatmapData: {}
+    heatmapData: {},
+    store: {
+        ownedItems: [],
+        consumables: [],
+        activeBoosts: [],
+        activeTheme: null,
+        activeTitle: null,
+        activeEffects: []
+    }
 };
 
 let state = JSON.parse(JSON.stringify(INITIAL_STATE));
 let stateSnapshot = null;
 let pendingRandomEvent = null;
 let stopwatchInterval = null;
+let currentStoreCategory = 'all';
+let storeBoostInterval = null;
 
 try {
     const savedState = localStorage.getItem('hsQuestPremium_v4');
@@ -139,23 +166,36 @@ try {
             state = { ...state, ...parsed };
         }
         
-        // FORTRESS SCHEMA VALIDATION: Enforce Arrays
         const arrayKeys = ['tasks', 'inventory', 'goals', 'lessons', 'studyPlan', 'unlockedAchievements', 'habits', 'weeklyReports', 'examSubjects', 'weaknesses', 'studySubjects', 'rewards'];
         arrayKeys.forEach(key => {
             if (!Array.isArray(state[key])) state[key] = JSON.parse(JSON.stringify(INITIAL_STATE[key]));
         });
 
-        // FORTRESS SCHEMA VALIDATION: Enforce Objects
         const objectKeys = ['stats', 'productivity', 'todayStats', 'weeklyStats', 'activeSession', 'heatmapData'];
         objectKeys.forEach(key => {
             if (typeof state[key] !== 'object' || state[key] === null) {
                 state[key] = JSON.parse(JSON.stringify(INITIAL_STATE[key]));
             } else {
-                state[key] = { ...INITIAL_STATE[key], ...state[key] }; // Shallow merge to ensure inner keys exist
+                state[key] = { ...INITIAL_STATE[key], ...state[key] };
             }
         });
 
-        // FORTRESS SCHEMA VALIDATION: Enforce Numbers & Prevent NaN
+        if (!state.store) {
+            state.store = {
+                ownedItems: [],
+                consumables: [],
+                activeBoosts: [],
+                activeTheme: null,
+                activeTitle: null,
+                activeEffects: []
+            };
+        } else {
+            if (!Array.isArray(state.store.ownedItems)) state.store.ownedItems = [];
+            if (!Array.isArray(state.store.consumables)) state.store.consumables = [];
+            if (!Array.isArray(state.store.activeBoosts)) state.store.activeBoosts = [];
+            if (!Array.isArray(state.store.activeEffects)) state.store.activeEffects = [];
+        }
+
         if (typeof state.xp !== 'number' || !isFinite(state.xp) || state.xp < 0) state.xp = 0;
         if (typeof state.coins !== 'number' || !isFinite(state.coins) || state.coins < 0) state.coins = 0;
         if (typeof state.streak !== 'number' || !isFinite(state.streak) || state.streak < 0) state.streak = 0;
@@ -163,13 +203,10 @@ try {
         if (typeof state.currentWeek !== 'number' || !isFinite(state.currentWeek) || state.currentWeek < 1) state.currentWeek = 1;
         if (typeof state.totalFocusMinutes !== 'number' || !isFinite(state.totalFocusMinutes) || state.totalFocusMinutes < 0) state.totalFocusMinutes = 0;
         
-        // Fallbacks for critical UI arrays
         if (state.habits.length === 0) state.habits = [...DEFAULT_HABITS];
-        if (state.rewards.length === 0) state.rewards = [...DEFAULT_REWARDS];
         if (!state.userName || typeof state.userName !== 'string') state.userName = 'اسمك هنا';
         if (!state.avatarId || typeof state.avatarId !== 'number') state.avatarId = 1;
         
-        // Deep nested validation
         state.studySubjects.forEach(s => {
             if(!Array.isArray(s.history)) s.history = [];
             if(typeof s.weeklyGoal !== 'number' || !isFinite(s.weeklyGoal)) s.weeklyGoal = 0;
@@ -190,7 +227,6 @@ function saveState() {
     updateGlobalUI();
 }
 
-// FIX 4: Return stringified state for local snapshots
 function saveSnapshot() { 
     stateSnapshot = JSON.parse(JSON.stringify(state)); 
     return JSON.stringify(state); 
@@ -206,6 +242,94 @@ function restoreSnapshot() {
     renderWeeklyHistory();
     renderHeatmap();
     if (isAudioInitialized && synth) synth.triggerAttackRelease("C3", "16n");
+}
+
+function getBoostMultiplier(boostType) {
+    if (!state.store || !state.store.activeBoosts) return 1;
+    
+    const now = Date.now();
+    let multiplier = 1;
+    
+    state.store.activeBoosts = state.store.activeBoosts.filter(b => b.expiresAt > now);
+    
+    state.store.activeBoosts.forEach(b => {
+        const item = STORE_CATALOG.find(i => i.id === b.itemId);
+        if (item && item.boostType === boostType) {
+            multiplier = Math.max(multiplier, item.multiplier);
+        }
+    });
+    
+    return multiplier;
+}
+
+function initStoreBoostInterval() {
+    if (storeBoostInterval) return;
+    storeBoostInterval = setInterval(() => {
+        if (!state.store || !state.store.activeBoosts || state.store.activeBoosts.length === 0) return;
+        
+        const now = Date.now();
+        let changed = false;
+        
+        state.store.activeBoosts = state.store.activeBoosts.filter(b => {
+            if (b.expiresAt <= now) {
+                changed = true;
+                const item = STORE_CATALOG.find(i => i.id === b.itemId);
+                if (item) showToast(`انتهى تأثير ${item.title}`, 'info');
+                return false;
+            }
+            return true;
+        });
+        
+        if (changed) {
+            saveState();
+            const storeView = document.getElementById('view-store');
+            if (storeView && storeView.classList.contains('active')) {
+                renderStore();
+            }
+        }
+    }, 10000);
+}
+
+function applyTheme() {
+    if (state.store && state.store.activeTheme) {
+        document.documentElement.setAttribute('data-theme', state.store.activeTheme);
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+}
+
+function triggerStoreEffect(eventName, payload = null) {
+    if (!state.store || !state.store.activeEffects || state.store.activeEffects.length === 0) return;
+    
+    const activeEffectItems = state.store.activeEffects.map(id => STORE_CATALOG.find(i => i.id === id)).filter(Boolean);
+    const triggeredEffects = activeEffectItems.filter(item => item.effectEvent === eventName);
+    
+    triggeredEffects.forEach(effect => {
+        if (eventName === 'task-complete') {
+            const burst = document.createElement('div');
+            burst.className = 'effect-glow-burst fixed inset-0 pointer-events-none z-[9999]';
+            burst.style.background = 'radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%)';
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 800);
+        } else if (eventName === 'focus-complete') {
+            const burst = document.createElement('div');
+            burst.className = 'effect-glow-burst fixed inset-0 pointer-events-none z-[9999]';
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 800);
+        } else if (eventName === 'achievement-unlock') {
+            const floatTxt = document.createElement('div');
+            floatTxt.className = 'effect-float-text text-yellow-400 text-2xl fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]';
+            floatTxt.innerText = `🏆 إنجاز جديد!`;
+            document.body.appendChild(floatTxt);
+            setTimeout(() => floatTxt.remove(), 1200);
+        } else if (eventName === 'streak') {
+            const floatTxt = document.createElement('div');
+            floatTxt.className = 'effect-float-text text-orange-400 text-2xl fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999]';
+            floatTxt.innerText = `🔥 استمرارية!`;
+            document.body.appendChild(floatTxt);
+            setTimeout(() => floatTxt.remove(), 1200);
+        }
+    });
 }
 
 const getLevel = () => Math.floor(state.xp / 100) + 1;
@@ -443,7 +567,6 @@ function closeRandomEvent() {
     }, 500);
 }
 
-// FIX 2: Dynamic Penalty Check
 function updateDailyStreak() {
     if (checkStreakAndPenaltyOnLoad()) return; 
 
@@ -452,7 +575,10 @@ function updateDailyStreak() {
     if (state.streak === 0) state.streak = 1;
     else {
         state.streak += 1; playSound('success');
-        setTimeout(() => { showToast(`يوم جديد في سلسلة الاستمرارية 🔥 (${state.streak} أيام متواصلة!)`, 'success'); }, 1000);
+        setTimeout(() => { 
+            showToast(`يوم جديد في سلسلة الاستمرارية 🔥 (${state.streak} أيام متواصلة!)`, 'success'); 
+            triggerStoreEffect('streak');
+        }, 1000);
     }
     state.bestStreak = Math.max(state.bestStreak || 0, state.streak);
     state.lastActionDate = todayStr; saveState();
@@ -669,7 +795,6 @@ function toggleAmbientSound() {
     }).catch(e => console.warn(e));
 }
 
-// FIX 4: localSnapshot parameter for safe undo
 function showToast(message, type = 'info', allowUndo = false, localSnapshot = null) {
     const container = document.getElementById('toast-container');
     if(!container) return;
@@ -772,7 +897,11 @@ function checkAchievements() {
 
         if (isConditionMet) {
             state.unlockedAchievements.push(tmpl.id); state.xp += tmpl.xp; state.coins += tmpl.xp; unlockedAny = true;
-            setTimeout(() => { playSound('achievement'); showToast(`🏆 إنجاز جديد مذهل! فتحت وسام "${tmpl.title}" وحصلت على +${tmpl.xp} XP وذهب!`, 'achievement'); }, 800);
+            setTimeout(() => { 
+                playSound('achievement'); 
+                showToast(`🏆 إنجاز جديد مذهل! فتحت وسام "${tmpl.title}" وحصلت على +${tmpl.xp} XP وذهب!`, 'achievement'); 
+                triggerStoreEffect('achievement-unlock');
+            }, 800);
         }
     });
     if (unlockedAny) updateGlobalUI();
@@ -819,14 +948,18 @@ function toggleHabit(id) {
     habit.completed = !habit.completed;
 
     if (habit.completed) {
-        state.xp += 10; state.coins += 10; 
-        state.todayStats.xp += 10; state.weeklyStats.xp += 10;
-        updateHeatmap(10);
-        playSound('pop'); showToast(`أحسنت! أتممت عادة اليوم. +10 XP وذهبة`, 'success', true, localSnapshot); trackProductivity(5);
+        const finalXp = Math.floor(10 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
+        state.xp += finalXp; state.coins += finalCoins; 
+        state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
+        updateHeatmap(finalXp);
+        playSound('pop'); showToast(`أحسنت! أتممت عادة اليوم. +${finalXp} XP وذهب`, 'success', true, localSnapshot); trackProductivity(5);
     } else {
-        state.xp = Math.max(0, state.xp - 10); state.coins = Math.max(0, state.coins - 10); 
-        state.todayStats.xp = Math.max(0, state.todayStats.xp - 10); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - 10);
-        updateHeatmap(-10);
+        const finalXp = Math.floor(10 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
+        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins); 
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
+        updateHeatmap(-finalXp);
         showToast('تم التراجع عن العادة', 'info', true, localSnapshot); trackProductivity(-5);
     }
     saveState(); renderHabits();
@@ -924,15 +1057,19 @@ function toggleBigQuest(id) {
     goal.completed = !goal.completed;
     
     if (goal.completed) {
-        state.xp += 500; state.coins += 500; 
-        state.todayStats.xp += 500; state.weeklyStats.xp += 500;
+        const finalXp = Math.floor(500 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(500 * getBoostMultiplier('coin'));
+        state.xp += finalXp; state.coins += finalCoins; 
+        state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
         updateHeatmap(100);
         updateDailyStreak(); playSound('reward');
-        showToast(`إنجاز أسطوري للمهمة الكبرى! +500 XP وذهب`, 'success', true, localSnapshot);
+        showToast(`إنجاز أسطوري للمهمة الكبرى! +${finalXp} XP وذهب`, 'success', true, localSnapshot);
         trackProductivity(100);
     } else {
-        state.xp = Math.max(0, state.xp - 500); state.coins = Math.max(0, state.coins - 500);
-        state.todayStats.xp = Math.max(0, state.todayStats.xp - 500); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - 500);
+        const finalXp = Math.floor(500 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(500 * getBoostMultiplier('coin'));
+        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins);
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
         updateHeatmap(-100);
         showToast('تم التراجع عن المهمة الكبرى', 'info', true, localSnapshot); trackProductivity(-100);
     }
@@ -982,8 +1119,11 @@ function updateUserName(newName) {
     state.userName = newName.trim(); saveState(); showToast('تم تحديث اسم البطل!', 'success');
 }
 
-function selectAvatar(id, reqLvl) {
-    if (getLevel() < reqLvl) {
+function selectAvatar(id, reqLvl, reqItem) {
+    if (reqItem && (!state.store || !state.store.ownedItems.includes(reqItem))) {
+        showToast(`هذا الأفاتار مقفول! يجب شراؤه من المتجر أولاً.`, 'info'); return;
+    }
+    if (!reqItem && getLevel() < reqLvl) {
         showToast(`هذا الأفاتار مقفول! تحتاج للوصول للمستوى ${reqLvl} لفتحه.`, 'info'); return;
     }
     state.avatarId = id; saveState(); renderProfile(); showToast('تم تغيير هويتك بنجاح!', 'success');
@@ -1000,11 +1140,12 @@ function renderProfile() {
     
     container.innerHTML = AVATARS_DATA.map(av => {
         const isSelected = state.avatarId === av.id; 
-        const isLocked = level < av.reqLvl;
+        const isLocked = av.reqItem ? (!state.store || !state.store.ownedItems.includes(av.reqItem)) : (level < av.reqLvl);
         let lockOverlay = '';
         
         if (isLocked) {
-            lockOverlay = `<div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-30 rounded-2xl"><i data-lucide="lock" class="w-6 h-6 text-white/80 mb-1"></i><span class="text-[9px] font-bold text-white bg-red-500/80 px-1.5 py-0.5 rounded">Lvl ${av.reqLvl}</span></div>`;
+            const lockText = av.reqItem ? 'متجر' : `Lvl ${av.reqLvl}`;
+            lockOverlay = `<div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-30 rounded-2xl"><i data-lucide="lock" class="w-6 h-6 text-white/80 mb-1"></i><span class="text-[9px] font-bold text-white bg-red-500/80 px-1.5 py-0.5 rounded">${lockText}</span></div>`;
         }
 
         const decs = isSelected && !isLocked ? getAvatarDecorationsHtml(level, true) : '';
@@ -1012,7 +1153,7 @@ function renderProfile() {
         const scale = isSelected ? 'scale-95' : '';
 
         return `
-        <div onclick="selectAvatar(${av.id}, ${av.reqLvl})" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}" class="relative aspect-square rounded-2xl cursor-pointer transition-transform btn-press ${scale} ${aura}">
+        <div onclick="selectAvatar(${av.id}, ${av.reqLvl}, '${av.reqItem || ''}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}" class="relative aspect-square rounded-2xl cursor-pointer transition-transform btn-press ${scale} ${aura}">
             <div class="w-full h-full rounded-2xl overflow-hidden ${isLocked ? 'locked-avatar' : ''}">
                 ${av.svg}
             </div>
@@ -1038,14 +1179,35 @@ function requestReset() {
             btn.innerText = "إعادة تهيئة البيانات (Reset)";
         }, 3000);
     } else {
-        const localSnapshot = saveSnapshot(); 
+        // 1. Destructive State Wipe
         state = JSON.parse(JSON.stringify(INITIAL_STATE)); 
+        
+        // 2. Clear Runtime State
+        if (stopwatchInterval) {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+        }
+        pendingRandomEvent = null;
+        stateSnapshot = null;
+
+        // 3. Save pristine state (automatically triggers updateGlobalUI)
         saveState();
+
+        // 4. Reset Theme & Global Components
+        applyTheme();
+        updateStopwatchUI(true);
+        renderHeatmap();
+        renderStudyTimeTable();
+        renderRecentSessions();
+
+        // 5. Reset Button UI
         resetClickCount = 0;
         btn.className = "w-full py-3 min-h-[44px] bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-sm font-bold btn-press transition-all";
         btn.innerText = "إعادة تهيئة البيانات (Reset)";
+        
+        // 6. Redirect and Notify (Irreversible)
         switchTab('dashboard'); 
-        showToast('تم مسح جميع البيانات والعودة لنقطة الصفر.', 'info', true, localSnapshot);
+        showToast('تم مسح جميع البيانات والعودة لنقطة الصفر.', 'info');
     }
 }
 
@@ -1068,19 +1230,28 @@ function toggleTask(id) {
     task.completed = !task.completed;
     
     if (task.completed) {
-        state.xp += task.xp; state.coins += task.xp; state.stats[task.category] += 1;
-        state.todayStats.tasks += 1; state.todayStats.xp += task.xp;
-        state.weeklyStats.tasks += 1; state.weeklyStats.xp += task.xp;
-        updateHeatmap(task.xp);
-        updateDailyStreak(); playSound('success'); showToast(`عاش! +${task.xp} XP وعملة`, 'success', true, localSnapshot);
-        trackProductivity(task.xp);
+        const xpMult = getBoostMultiplier('xp');
+        const coinMult = getBoostMultiplier('coin');
+        const finalXp = Math.floor(task.xp * xpMult);
+        const finalCoins = Math.floor(task.xp * coinMult);
+        state.xp += finalXp; state.coins += finalCoins; state.stats[task.category] += 1;
+        state.todayStats.tasks += 1; state.todayStats.xp += finalXp;
+        state.weeklyStats.tasks += 1; state.weeklyStats.xp += finalXp;
+        updateHeatmap(finalXp);
+        updateDailyStreak(); playSound('success'); showToast(`عاش! +${finalXp} XP وعملة`, 'success', true, localSnapshot);
+        trackProductivity(finalXp);
+        triggerStoreEffect('task-complete');
     } else {
-        state.xp = Math.max(0, state.xp - task.xp); state.coins = Math.max(0, state.coins - task.xp);
+        const xpMult = getBoostMultiplier('xp');
+        const coinMult = getBoostMultiplier('coin');
+        const finalXp = Math.floor(task.xp * xpMult);
+        const finalCoins = Math.floor(task.xp * coinMult);
+        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins);
         state.stats[task.category] = Math.max(0, state.stats[task.category] - 1);
-        state.todayStats.tasks = Math.max(0, state.todayStats.tasks - 1); state.todayStats.xp = Math.max(0, state.todayStats.xp - task.xp);
-        state.weeklyStats.tasks = Math.max(0, state.weeklyStats.tasks - 1); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - task.xp);
-        updateHeatmap(-task.xp);
-        showToast('تم إلغاء إنجاز المهمة', 'info', true, localSnapshot); trackProductivity(-task.xp);
+        state.todayStats.tasks = Math.max(0, state.todayStats.tasks - 1); state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp);
+        state.weeklyStats.tasks = Math.max(0, state.weeklyStats.tasks - 1); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
+        updateHeatmap(-finalXp);
+        showToast('تم إلغاء إنجاز المهمة', 'info', true, localSnapshot); trackProductivity(-finalXp);
     }
     saveState(); renderTasks();
 }
@@ -1247,7 +1418,6 @@ function finishSession() {
         return;
     }
 
-    // FIX 2: Prevent OS Clock Manipulation (Hard cap at 12 hours)
     if (minutes > 720) {
         minutes = 720;
         totalMs = 720 * 60000;
@@ -1340,16 +1510,16 @@ function confirmSaveSession(subjectId) {
     subject.totalMinutes += minutes;
     subject.lastStudied = new Date().toLocaleDateString('ar-EG');
     
-    const xpReward = minutes * 2;
-    const coinReward = minutes * 1;
-    state.xp += xpReward;
-    state.coins += coinReward;
+    const finalXp = Math.floor((minutes * 2) * getBoostMultiplier('xp'));
+    const finalCoins = Math.floor((minutes * 1) * getBoostMultiplier('coin'));
+    state.xp += finalXp;
+    state.coins += finalCoins;
     state.totalFocusMinutes += minutes;
     state.todayStats.focus += minutes;
     state.weeklyStats.focus += minutes;
     
-    trackProductivity(minutes * 2);
-    updateHeatmap(minutes * 2);
+    trackProductivity(finalXp);
+    updateHeatmap(finalXp);
     updateDailyStreak();
     
     state.activeSession = { isRunning: false, startTime: null, elapsedMs: 0 };
@@ -1362,10 +1532,10 @@ function confirmSaveSession(subjectId) {
     renderStats();
     
     playSound('reward');
-    showToast(`أحسنت! تمت إضافة ${minutes} دقيقة إلى ${subject.name}. +${xpReward} XP`, 'success');
+    showToast(`أحسنت! تمت إضافة ${minutes} دقيقة إلى ${subject.name}. +${finalXp} XP`, 'success');
+    triggerStoreEffect('focus-complete');
 }
 
-// FIX 3: Strict setSubjectWeeklyGoal
 function setSubjectWeeklyGoal(id) {
     const subject = state.studySubjects.find(s => s.id === id);
     if (!subject) return;
@@ -1636,168 +1806,299 @@ function deleteStudySubject(id) {
     showToast('تم حذف المادة', 'info');
 }
 
-function buyMagicItem(itemId) {
-    const item = MAGIC_SHOP_ITEMS.find(i => i.id === itemId);
+function buyStoreItem(id) {
+    const item = STORE_CATALOG.find(i => i.id === id);
     if (!item) return;
 
-    if (state.coins >= item.cost) {
-        const localSnapshot = saveSnapshot();
-        state.coins -= item.cost;
-        
-        if (itemId === 'xp_potion_small') {
-            state.xp += 150;
-            playSound('reward');
-            showToast('شربت الجرعة الصغرى! +150 XP 🧪', 'success', true, localSnapshot);
-        } else if (itemId === 'focus_scroll') {
-            state.totalFocusMinutes += 60;
-            playSound('achievement');
-            showToast('قرأت لفيفة التركيز! أُضيف 60 دقيقة لسجلك 📜', 'success', true, localSnapshot);
-        } else if (itemId === 'xp_potion') {
-            state.xp += 300;
-            playSound('reward');
-            showToast('شربت إكسير الحكمة! +300 XP 🧪', 'success', true, localSnapshot);
-        } else if (itemId === 'streak_shield') {
-            state.streak += 3;
-            playSound('achievement');
-            showToast('توهج درع الاستمرارية! +3 أيام لسلسلتك 🔥', 'success', true, localSnapshot);
-        } else if (itemId === 'mystery_box') {
-            const rand = Math.random();
-            playSound('achievement');
-            if (rand < 0.33) {
-                state.xp += 800;
-                showToast('صندوق محظوظ! حصلت على 800 XP 🎁', 'success', true, localSnapshot);
-            } else if (rand < 0.66) {
-                state.coins += 800;
-                showToast('صندوق محظوظ! حصلت على 800 ذهب 🎁', 'success', true, localSnapshot);
-            } else {
-                state.totalFocusMinutes += 120;
-                showToast('صندوق الزمن! +120 دقيقة تركيز ⏳', 'success', true, localSnapshot);
-            }
-        } else if (itemId === 'time_freeze') {
-            state.xp += 500;
-            state.totalFocusMinutes += 100;
-            playSound('reward');
-            showToast('توقف الزمن! +500 XP و 100 دقيقة تركيز ⌛', 'success', true, localSnapshot);
-        } else if (itemId === 'phoenix_feather') {
-            state.xp += 1000;
-            playSound('achievement');
-            showToast('طاقة العنقاء تسري بك! +1000 XP 🪶', 'success', true, localSnapshot);
-        } else if (itemId === 'golden_ticket') {
-            state.inventory.unshift({ id: Date.now(), title: 'يوم إجازة حر (بدون تأنيب ضمير)' });
-            playSound('reward');
-            showToast('حصلت على التذكرة الذهبية! تفقد مخزونك 🎟️', 'success', true, localSnapshot);
-        } else if (itemId === 'crown_of_king') {
-            state.xp += 2000;
-            state.totalFocusMinutes += 200;
-            playSound('epic_hit');
-            showToast('أنت الملك! توجت بـ 2000 XP و 200 دقيقة تركيز 👑', 'achievement', true, localSnapshot);
-        }
-        
-        saveState();
-        renderStore();
-        updateGlobalUI();
-    } else {
-        showToast(`تحتاج إلى ${item.cost - state.coins} ذهب إضافي.`, 'info');
+    const isPermanent = ['theme', 'title', 'avatar', 'effect'].includes(item.type);
+    if (isPermanent && state.store.ownedItems.includes(id)) {
+        showToast('أنت تملك هذا العنصر بالفعل!', 'info');
+        return;
     }
+
+    if (state.coins < item.cost) {
+        showToast(`تحتاج إلى ${item.cost - state.coins} ذهب إضافي.`, 'info');
+        return;
+    }
+
+    const localSnapshot = saveSnapshot();
+    state.coins -= item.cost;
+
+    if (item.type === 'mystery') {
+        openMysteryBox(item, localSnapshot);
+        return;
+    }
+
+    if (isPermanent) {
+        state.store.ownedItems.push(id);
+        playSound('reward');
+        showToast(`تم شراء ${item.title} بنجاح!`, 'success', true, localSnapshot);
+    } else {
+        state.store.consumables.push({ instanceId: Date.now() + Math.random(), itemId: id });
+        playSound('reward');
+        showToast(`تم شراء ${item.title}. تجده في خزانة المقتنيات.`, 'success', true, localSnapshot);
+    }
+
+    saveState();
+    renderStore();
+    updateGlobalUI();
 }
 
-function addReward(e) {
-    e.preventDefault();
-    const inputEl = document.getElementById('new-reward-input');
-    const costEl = document.getElementById('new-reward-cost');
-    if(!inputEl || !costEl) return;
+function activateStoreItem(id) {
+    const item = STORE_CATALOG.find(i => i.id === id);
+    if (!item || !state.store.ownedItems.includes(id)) return;
 
-    const title = inputEl.value.trim();
-    const cost = parseInt(costEl.value);
-    if (!title || isNaN(cost) || cost <= 0) return;
+    if (item.type === 'theme') {
+        state.store.activeTheme = id;
+        applyTheme();
+    } else if (item.type === 'title') {
+        state.store.activeTitle = id;
+    } else if (item.type === 'avatar') {
+        state.avatarId = item.avatarId;
+        renderProfile();
+    } else if (item.type === 'effect') {
+        if (!state.store.activeEffects.includes(id)) {
+            state.store.activeEffects.push(id);
+        }
+    }
+
+    saveState();
+    renderStore();
+    updateGlobalUI();
+    showToast(`تم تفعيل ${item.title}`, 'info');
+}
+
+function deactivateStoreItem(id) {
+    const item = STORE_CATALOG.find(i => i.id === id);
+    if (!item) return;
+
+    if (item.type === 'theme' && state.store.activeTheme === id) {
+        state.store.activeTheme = null;
+        applyTheme();
+    } else if (item.type === 'title' && state.store.activeTitle === id) {
+        state.store.activeTitle = null;
+    } else if (item.type === 'avatar' && state.avatarId === item.avatarId) {
+        const level = getLevel();
+        const availableStandard = AVATARS_DATA.filter(a => a.type === 'standard' && a.reqLvl <= level);
+        const highest = availableStandard.reduce((prev, current) => (prev.id > current.id) ? prev : current, availableStandard[0]);
+        state.avatarId = highest ? highest.id : 1;
+        renderProfile();
+    } else if (item.type === 'effect') {
+        state.store.activeEffects = state.store.activeEffects.filter(eId => eId !== id);
+    }
+
+    saveState();
+    renderStore();
+    updateGlobalUI();
+}
+
+function consumeItem(instanceId) {
+    const index = state.store.consumables.findIndex(c => c.instanceId === instanceId);
+    if (index === -1) return;
+
+    const consumable = state.store.consumables[index];
+    const item = STORE_CATALOG.find(i => i.id === consumable.itemId);
+    if (!item) return;
+
+    const localSnapshot = saveSnapshot();
+    state.store.consumables.splice(index, 1);
+
+    if (item.type === 'boost') {
+        state.store.activeBoosts.push({
+            itemId: item.id,
+            expiresAt: Date.now() + item.duration
+        });
+        playSound('achievement');
+        showToast(`تم تفعيل ${item.title}!`, 'success', true, localSnapshot);
+    } else if (item.type === 'instant') {
+        if (item.grantXp) state.xp += item.grantXp;
+        if (item.grantFocus) {
+            state.totalFocusMinutes += item.grantFocus;
+            state.todayStats.focus += item.grantFocus;
+            state.weeklyStats.focus += item.grantFocus;
+        }
+        if (item.grantStreak) state.streak += item.grantStreak;
+        playSound('achievement');
+        showToast(`تم استخدام ${item.title} بنجاح!`, 'success', true, localSnapshot);
+    }
+
+    saveState();
+    renderStore();
+    updateGlobalUI();
+}
+
+function openMysteryBox(boxItem, localSnapshot) {
+    const rand = Math.random();
+    let rewardText = '';
     
-    state.rewards.unshift({ id: Date.now(), title, cost });
-    inputEl.value = ''; costEl.value = '';
-    saveState(); renderStore(); showToast('تم إضافة المكافأة', 'success');
+    if (boxItem.pool === 'small') {
+        if (rand < 0.4) {
+            state.xp += 300; rewardText = '300 XP';
+        } else if (rand < 0.8) {
+            state.coins += 300; rewardText = '300 ذهب';
+        } else {
+            state.store.consumables.push({ instanceId: Date.now(), itemId: 'boost_xp_1' });
+            rewardText = 'مضاعف الخبرة (ساعة)';
+        }
+    } else {
+        if (rand < 0.33) {
+            state.xp += 1000; rewardText = '1000 XP';
+        } else if (rand < 0.66) {
+            state.coins += 1000; rewardText = '1000 ذهب';
+        } else {
+            const epicItems = STORE_CATALOG.filter(i => i.rarity === 'epic' && ['theme', 'title'].includes(i.type));
+            const rolledItem = epicItems[Math.floor(Math.random() * epicItems.length)];
+            
+            if (rolledItem && !state.store.ownedItems.includes(rolledItem.id)) {
+                state.store.ownedItems.push(rolledItem.id);
+                rewardText = rolledItem.title;
+            } else {
+                state.coins += 1500;
+                rewardText = '1500 ذهب (تعويض عن عنصر مكرر)';
+            }
+        }
+    }
+
+    playSound('epic_hit');
+    showToast(`فتحت ${boxItem.title} وحصلت على: ${rewardText} 🎁`, 'achievement', true, localSnapshot);
+    saveState();
+    renderStore();
+    updateGlobalUI();
 }
 
-function buyReward(id) {
-    const reward = state.rewards.find(r => r.id === id);
-    if(!reward) return;
+function renderStoreGrid() {
+    const grid = document.getElementById('ui-store-grid');
+    const emptyState = document.getElementById('ui-store-grid-empty');
+    if (!grid) return;
 
-    if (state.coins >= reward.cost) {
-        const localSnapshot = saveSnapshot(); 
-        state.coins -= reward.cost; 
-        state.inventory.unshift({ id: Date.now(), title: reward.title });
-        playSound('reward'); showToast(`تم الشراء: ${reward.title}. تجدها في مخزونك!`, 'success', true, localSnapshot);
-        saveState(); renderStore(); updateGlobalUI();
-    } else { showToast(`تحتاج ${reward.cost - state.coins} ذهب إضافي.`, 'info'); }
-}
+    let items = STORE_CATALOG;
+    if (currentStoreCategory !== 'all') {
+        items = items.filter(i => i.category === currentStoreCategory);
+    }
 
-function activateInventoryItem(id) {
-    const itemIndex = state.inventory.findIndex(i => i.id === id);
-    if (itemIndex === -1) return;
-    const item = state.inventory[itemIndex];
-    const localSnapshot = saveSnapshot(); 
-    state.inventory.splice(itemIndex, 1);
-    playSound('success'); showToast(`تم تفعيل: ${item.title}. استمتع بوقتك! 🎉`, 'reward', true, localSnapshot);
-    saveState(); renderStore();
-}
+    if (items.length === 0) {
+        grid.innerHTML = '';
+        if (emptyState) {
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('block');
+        }
+        return;
+    } else {
+        if (emptyState) {
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('block');
+        }
+    }
 
-function deleteReward(id, e) {
-    e.stopPropagation(); state.rewards = state.rewards.filter(r => r.id !== id); saveState(); renderStore();
+    grid.innerHTML = items.map(item => {
+        const isOwned = state.store.ownedItems.includes(item.id);
+        const canAfford = state.coins >= item.cost;
+        const isPermanent = ['theme', 'title', 'avatar', 'effect'].includes(item.type);
+        
+        let isActive = false;
+        if (item.type === 'theme') isActive = state.store.activeTheme === item.id;
+        if (item.type === 'title') isActive = state.store.activeTitle === item.id;
+        if (item.type === 'avatar') isActive = state.avatarId === item.avatarId;
+        if (item.type === 'effect') isActive = state.store.activeEffects.includes(item.id);
+
+        let btnHtml = '';
+        if (isOwned && isPermanent) {
+            if (isActive) {
+                btnHtml = `<button onclick="deactivateStoreItem('${item.id}')" class="w-full py-2 min-h-[44px] rounded-xl bg-white/10 text-white font-bold text-sm btn-press">إلغاء التفعيل</button>`;
+            } else {
+                btnHtml = `<button onclick="activateStoreItem('${item.id}')" class="w-full py-2 min-h-[44px] rounded-xl bg-blue-500/20 text-blue-400 font-bold text-sm btn-press">تفعيل</button>`;
+            }
+        } else {
+            btnHtml = `<button onclick="buyStoreItem('${item.id}')" class="w-full py-2 min-h-[44px] rounded-xl ${canAfford ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30' : 'bg-white/5 text-white/30 cursor-not-allowed'} font-bold text-sm flex justify-center items-center gap-2 btn-press">
+                شراء بـ ${item.cost} <i data-lucide="coins" class="w-4 h-4"></i>
+            </button>`;
+        }
+
+        return `
+        <div class="store-card glass-panel p-4 rounded-2xl border border-white/5 rarity-${item.rarity} ${isOwned && isPermanent ? 'owned' : ''} ${isActive ? 'active-item' : ''}">
+            <div class="flex items-start justify-between mb-3">
+                <div class="w-12 h-12 rounded-xl store-card-icon-bg flex items-center justify-center shrink-0">
+                    <i data-lucide="${item.icon}" class="w-6 h-6 store-card-icon"></i>
+                </div>
+                ${isOwned && isPermanent ? `<span class="text-[10px] font-bold bg-white/10 text-white/70 px-2 py-1 rounded-md">مملوك</span>` : ''}
+            </div>
+            <h4 class="text-base font-bold text-white mb-1">${item.title}</h4>
+            <p class="text-[11px] text-white/60 leading-relaxed mb-4 flex-1">${item.desc}</p>
+            ${btnHtml}
+        </div>`;
+    }).join('');
+    lucide.createIcons({ root: grid });
 }
 
 function renderStore() {
     const storeCoinsMagicEl = document.getElementById('ui-store-coins-magic');
     if (storeCoinsMagicEl) storeCoinsMagicEl.innerText = state.coins;
     
-    const magicContainer = document.getElementById('ui-magic-shop-container');
-    if (magicContainer) {
-        magicContainer.innerHTML = MAGIC_SHOP_ITEMS.map(item => {
-            const canAfford = state.coins >= item.cost;
-            return `
-            <div onclick="${canAfford ? `buyMagicItem('${item.id}')` : ''}" tabindex="${canAfford ? '0' : '-1'}" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}" class="glass-panel p-4 min-h-[44px] rounded-2xl flex flex-col justify-between border ${item.bg} ${canAfford ? `cursor-pointer btn-press ${item.hover}` : 'opacity-50 grayscale cursor-not-allowed'} transition-all group relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-16 h-16 bg-white/5 rounded-full blur-[20px] pointer-events-none"></div>
-                <div class="flex items-start justify-between mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center border border-white/10 shrink-0">
-                        <i data-lucide="${item.icon}" class="w-5 h-5"></i>
+    renderStoreGrid();
+    
+    const activeBoostsContainer = document.getElementById('ui-active-boosts-container');
+    const activeBoostsSection = document.getElementById('ui-store-active-boosts');
+    
+    if (activeBoostsContainer && activeBoostsSection) {
+        const now = Date.now();
+        const active = state.store.activeBoosts.filter(b => b.expiresAt > now);
+        
+        if (active.length > 0) {
+            activeBoostsSection.classList.remove('hidden');
+            activeBoostsSection.classList.add('flex');
+            
+            activeBoostsContainer.innerHTML = active.map(b => {
+                const item = STORE_CATALOG.find(i => i.id === b.itemId);
+                if (!item) return '';
+                const remainingMins = Math.ceil((b.expiresAt - now) / 60000);
+                return `
+                <div class="glass-panel p-3 rounded-xl border border-orange-500/30 bg-orange-500/5 flex items-center gap-3 active-boost-card">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
+                        <i data-lucide="${item.icon}" class="w-4 h-4"></i>
                     </div>
-                    <span class="text-xs font-black bg-black/40 px-2 py-1 rounded-md border border-white/5 flex items-center gap-1">
-                        ${item.cost} <i data-lucide="coins" class="w-4 h-4 text-yellow-500"></i>
-                    </span>
-                </div>
-                <h4 class="text-base font-bold text-white mb-1">${item.title}</h4>
-                <p class="text-[11px] text-white/60 leading-tight">${item.desc}</p>
-            </div>`;
-        }).join('');
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-bold text-white truncate">${item.title}</h4>
+                        <p class="text-[10px] text-orange-400 font-bold mt-0.5">ينتهي بعد ${remainingMins} دقيقة</p>
+                    </div>
+                </div>`;
+            }).join('');
+        } else {
+            activeBoostsSection.classList.add('hidden');
+            activeBoostsSection.classList.remove('flex');
+        }
     }
 
-    const container = document.getElementById('ui-rewards-container');
-    if (container) {
-        container.innerHTML = state.rewards.map(reward => {
-            const canAfford = state.coins >= reward.cost;
-            return `
-            <div class="glass-panel p-4 min-h-[44px] rounded-2xl flex flex-col justify-between border-t border-white/5 relative group">
-                <button onclick="deleteReward(${reward.id}, event)" aria-label="حذف المكافأة" class="absolute top-2 left-2 w-11 h-11 flex items-center justify-center text-white/20 hover:text-red-400 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <h4 class="text-base font-bold text-white mb-4 pr-6 leading-relaxed">${escapeHTML(reward.title)}</h4>
-                <button onclick="buyReward(${reward.id})" class="w-full py-3 min-h-[44px] rounded-xl font-bold text-sm flex justify-center items-center gap-2 btn-press transition-all ${canAfford ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30' : 'bg-white/5 text-white/30 cursor-not-allowed'}">
-                    <i data-lucide="shopping-bag" class="w-4 h-4"></i> شراء بـ ${reward.cost} ذهب
-                </button>
-            </div>`;
-        }).join('');
-    }
-    
     const invContainer = document.getElementById('ui-inventory-container');
+    const invEmpty = document.getElementById('ui-inventory-empty');
     if (invContainer) {
-        if (state.inventory.length === 0) {
-            invContainer.innerHTML = `<div class="glass-panel rounded-2xl p-6 text-center opacity-50 border-dashed border-2 border-white/10"><p class="text-sm text-white/70">المخزون فارغ حالياً.</p></div>`;
+        if (!state.store.consumables || state.store.consumables.length === 0) {
+            invContainer.innerHTML = '';
+            if (invEmpty) {
+                invEmpty.classList.remove('hidden');
+                invEmpty.classList.add('block');
+            }
         } else {
-            invContainer.innerHTML = state.inventory.map(item => `
-            <div class="glass-panel p-3.5 min-h-[44px] rounded-2xl flex items-center justify-between border border-emerald-500/20 bg-emerald-500/5 group shadow-lg">
-                <div class="flex items-center gap-3 flex-1 overflow-hidden">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0 border border-emerald-500/30">
-                        <i data-lucide="ticket" class="w-5 h-5 text-emerald-400"></i>
+            if (invEmpty) {
+                invEmpty.classList.add('hidden');
+                invEmpty.classList.remove('block');
+            }
+            invContainer.innerHTML = state.store.consumables.map(c => {
+                const item = STORE_CATALOG.find(i => i.id === c.itemId);
+                if (!item) return '';
+                return `
+                <div class="glass-panel p-3.5 min-h-[44px] rounded-2xl flex items-center justify-between border border-emerald-500/20 bg-emerald-500/5 group shadow-lg">
+                    <div class="flex items-center gap-3 flex-1 overflow-hidden">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                            <i data-lucide="${item.icon}" class="w-5 h-5 text-emerald-400"></i>
+                        </div>
+                        <div class="flex flex-col min-w-0">
+                            <h4 class="text-sm font-bold text-white leading-tight truncate pr-1">${escapeHTML(item.title)}</h4>
+                            <span class="text-[10px] text-emerald-400/70 truncate">${item.desc}</span>
+                        </div>
                     </div>
-                    <h4 class="text-base font-bold text-white leading-tight truncate pr-1">${escapeHTML(item.title)}</h4>
-                </div>
-                <button onclick="activateInventoryItem(${item.id})" class="px-4 py-2 min-h-[44px] bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-xl text-sm font-bold transition-all btn-press shrink-0">تفعيل</button>
-            </div>`).join('');
+                    <button onclick="consumeItem(${c.instanceId})" class="px-4 py-2 min-h-[44px] bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded-xl text-sm font-bold transition-all btn-press shrink-0">استخدام</button>
+                </div>`;
+            }).join('');
         }
     }
     lucide.createIcons();
@@ -2145,8 +2446,11 @@ function advanceWeek() {
     state.productivity = { 'السبت': 0, 'الأحد': 0, 'الإثنين': 0, 'الثلاثاء': 0, 'الأربعاء': 0, 'الخميس': 0, 'الجمعة': 0 };
 
     state.currentWeek += 1; 
-    state.xp += 200; 
-    state.coins += 200;
+    
+    const finalXp = Math.floor(200 * getBoostMultiplier('xp'));
+    const finalCoins = Math.floor(200 * getBoostMultiplier('coin'));
+    state.xp += finalXp; 
+    state.coins += finalCoins;
     
     saveState(); 
     renderJourney(); 
@@ -2216,12 +2520,16 @@ function toggleScheduleItem(id) {
     const localSnapshot = saveSnapshot(); 
     item.completed = !item.completed;
     if(item.completed) { 
-        state.xp += 20; state.coins += 10; 
-        state.todayStats.xp += 20; state.weeklyStats.xp += 20;
-        playSound('pop'); showToast('+20 XP ، استمر يا بطل!', 'success', true, localSnapshot); 
+        const finalXp = Math.floor(20 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
+        state.xp += finalXp; state.coins += finalCoins; 
+        state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
+        playSound('pop'); showToast(`+${finalXp} XP ، استمر يا بطل!`, 'success', true, localSnapshot); 
     } else { 
-        state.xp = Math.max(0, state.xp - 20); state.coins = Math.max(0, state.coins - 10); 
-        state.todayStats.xp = Math.max(0, state.todayStats.xp - 20); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - 20);
+        const finalXp = Math.floor(20 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
+        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins); 
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
         showToast('تم التراجع', 'info', true, localSnapshot);
     }
     saveState(); renderScheduleItems();
@@ -2274,7 +2582,17 @@ function updateGlobalUI() {
     const headerStreak = document.getElementById('ui-header-streak');
     const headerWeek = document.getElementById('ui-header-week');
 
-    if(headerName) headerName.innerText = state.userName;
+    if(headerName) {
+        let titleHtml = '';
+        if (state.store && state.store.activeTitle) {
+            const titleItem = STORE_CATALOG.find(i => i.id === state.store.activeTitle);
+            if (titleItem) {
+                titleHtml = `<span class="text-[10px] text-yellow-400 ml-2 border border-yellow-500/30 bg-yellow-500/10 px-1.5 py-0.5 rounded align-middle">${titleItem.label}</span>`;
+            }
+        }
+        headerName.innerHTML = `${escapeHTML(state.userName)}${titleHtml}`;
+    }
+    
     if(headerLevel) headerLevel.innerText = `Lvl ${level}`;
     if(headerCoins) headerCoins.innerText = state.coins;
     if(headerStreak) headerStreak.innerText = state.streak;
@@ -2386,10 +2704,10 @@ function addExamResult(subjectId, e) {
     subject.exams.push(newExam);
     updateSubjectStats(subject);
     
-    const xpReward = Math.floor(percentage / 10) * 50;
-    const coinReward = Math.floor(percentage / 10) * 10;
-    state.xp += xpReward;
-    state.coins += coinReward;
+    const finalXp = Math.floor((Math.floor(percentage / 10) * 50) * getBoostMultiplier('xp'));
+    const finalCoins = Math.floor((Math.floor(percentage / 10) * 10) * getBoostMultiplier('coin'));
+    state.xp += finalXp;
+    state.coins += finalCoins;
     
     examNameInput.value = '';
     gradeInput.value = '';
@@ -2398,7 +2716,7 @@ function addExamResult(subjectId, e) {
     
     saveState();
     renderExams();
-    showToast(`تم إضافة نتيجة "${examName}" بنجاح! +${xpReward} XP و +${coinReward} عملة 🎉`, 'success');
+    showToast(`تم إضافة نتيجة "${examName}" بنجاح! +${finalXp} XP و +${finalCoins} عملة 🎉`, 'success');
 }
 
 function updateSubjectStats(subject) {
@@ -2602,13 +2920,17 @@ function toggleWeakness(id) {
     w.solved = !w.solved;
     
     if (w.solved) {
-        state.xp += 100; state.coins += 100;
-        state.todayStats.xp += 100; state.weeklyStats.xp += 100;
+        const finalXp = Math.floor(100 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(100 * getBoostMultiplier('coin'));
+        state.xp += finalXp; state.coins += finalCoins;
+        state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
         playSound('reward');
-        showToast('رائع! حولت نقطة ضعف إلى قوة. +100 XP وذهب', 'success', true, localSnapshot);
+        showToast(`رائع! حولت نقطة ضعف إلى قوة. +${finalXp} XP وذهب`, 'success', true, localSnapshot);
     } else {
-        state.xp = Math.max(0, state.xp - 100);
-        state.coins = Math.max(0, state.coins - 100);
+        const finalXp = Math.floor(100 * getBoostMultiplier('xp'));
+        const finalCoins = Math.floor(100 * getBoostMultiplier('coin'));
+        state.xp = Math.max(0, state.xp - finalXp);
+        state.coins = Math.max(0, state.coins - finalCoins);
         showToast('تم التراجع عن حل الثغرة', 'info', true, localSnapshot);
     }
     
@@ -2672,7 +2994,6 @@ window.onload = () => {
     let popupDelay = 0;
     const splashScreen = document.getElementById('splash-screen');
     
-    // Keep ONLY the focus section cleanup
     const focusInsights = document.getElementById('smart-insights-container');
     if (focusInsights && focusInsights.parentElement) focusInsights.parentElement.remove();
     
@@ -2798,8 +3119,10 @@ window.onload = () => {
     }
 
     lucide.createIcons();
+    applyTheme();
     updateGlobalUI(); 
     updateQuote();
+    initStoreBoostInterval();
     
     if (Object.values(state.productivity).reduce((a, b) => a + b, 0) === 0) {
         const today = new Date().getDay();
@@ -2810,6 +3133,21 @@ window.onload = () => {
 
     switchTab('dashboard');
     selectedScheduleDay = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'][new Date().getDay()];
+
+    const categoryBtns = document.querySelectorAll('.store-category-btn');
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            categoryBtns.forEach(b => {
+                b.classList.remove('active', 'bg-yellow-500/20', 'text-yellow-400', 'border-yellow-500/30');
+                b.classList.add('bg-white/5', 'text-white/50', 'border-white/5');
+            });
+            const target = e.currentTarget;
+            target.classList.remove('bg-white/5', 'text-white/50', 'border-white/5');
+            target.classList.add('active', 'bg-yellow-500/20', 'text-yellow-400', 'border-yellow-500/30');
+            currentStoreCategory = target.dataset.category;
+            renderStoreGrid();
+        });
+    });
 
     setTimeout(() => {
         const isPenaltyApplied = checkStreakAndPenaltyOnLoad();
