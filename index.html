@@ -293,38 +293,88 @@
         </section>
 
         <section id="view-store" class="view-section space-y-6 pb-8">
-            <div class="flex items-center justify-between mb-2 mt-4 px-2 w-full">
-                <h2 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-yellow-400"></i> السوق السري</h2>
-                <div class="inline-flex items-center gap-1.5 bg-black/40 px-4 py-2 min-h-[44px] rounded-lg border border-white/10">
-                    <span id="ui-store-coins-magic" class="text-yellow-400 font-bold text-sm">0</span>
-                    <i data-lucide="coins" class="w-4 h-4 text-yellow-500"></i>
+            <!-- Store Header -->
+            <div class="glass-panel rounded-[2rem] p-6 relative overflow-hidden shadow-xl border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-transparent w-full">
+                <div class="absolute -left-10 -top-10 w-32 h-32 bg-yellow-500/20 rounded-full blur-[50px] pointer-events-none"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <h2 class="text-2xl font-black text-white flex items-center gap-2">
+                            <i data-lucide="store" class="w-6 h-6 text-yellow-400"></i> متجر RODO
+                        </h2>
+                        <p class="text-xs text-white/60 mt-1">نظام المكافآت والتخصيص الخاص بك. استثمر عملاتك لتطوير تجربتك.</p>
+                    </div>
+                    <div class="flex flex-col items-center justify-center bg-black/40 px-4 py-2 rounded-xl border border-yellow-500/20 shadow-inner">
+                        <span class="text-[10px] text-white/50 font-bold mb-0.5">رصيدك</span>
+                        <div class="flex items-center gap-1.5">
+                            <span id="ui-store-coins-magic" class="text-yellow-400 font-black text-lg">0</span>
+                            <i data-lucide="coins" class="w-4 h-4 text-yellow-500"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <p class="text-xs text-white/50 px-2 mb-4">عناصر أسطورية تؤثر على رحلتك وتزيد من خبرتك!</p>
-            
-            <div id="ui-magic-shop-container" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10 w-full"></div>
 
-            <div class="glass-panel rounded-[2rem] p-6 text-center shadow-xl mb-6 bg-yellow-500/5 border-yellow-500/20 mt-8 w-full">
-                <i data-lucide="gift" class="w-10 h-10 text-yellow-400 mx-auto mb-3"></i>
-                <h2 class="text-2xl font-bold mb-1 text-white">مكافآت الترفيه</h2>
-                <p class="text-sm text-white/60 mb-4">كافئ نفسك بأشياء تحبها في الواقع، بدون تأنيب ضمير!</p>
+            <!-- Active Boosts -->
+            <div id="ui-store-active-boosts" class="hidden flex-col gap-3 w-full">
+                <h3 class="text-sm font-bold text-white/70 flex items-center gap-2 px-2">
+                    <i data-lucide="zap" class="w-4 h-4 text-orange-400"></i> المعززات النشطة
+                </h3>
+                <div id="ui-active-boosts-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                    <!-- JS injects active boosts here -->
+                </div>
             </div>
 
-            <form onsubmit="addReward(event)" class="glass-panel rounded-2xl p-3 flex flex-wrap sm:flex-nowrap gap-2 w-full">
-                <input type="text" id="new-reward-input" placeholder="إضافة مكافأة جديدة (مثل: فيلم)" aria-label="اسم المكافأة" required class="flex-1 w-full min-w-[200px] bg-transparent border-none text-white px-3 text-base min-h-[44px] focus:outline-none placeholder-white/30">
-                <input type="number" id="new-reward-cost" placeholder="السعر" aria-label="سعر المكافأة" required min="1" class="w-full sm:w-24 bg-black/40 rounded-lg border border-white/10 text-white text-center text-base min-h-[44px] focus:outline-none placeholder-white/30">
-                <button type="submit" aria-label="إضافة مكافأة" class="w-full sm:w-11 h-11 min-w-[44px] rounded-xl bg-yellow-600 hover:bg-yellow-500 text-white flex items-center justify-center btn-press shrink-0 transition-colors">
-                    <i data-lucide="plus" class="w-5 h-5"></i>
+            <!-- Category Navigation -->
+            <div class="flex overflow-x-auto hide-scrollbar gap-2 pb-2 w-full" id="ui-store-categories">
+                <button class="store-category-btn active px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="all">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i> الكل
                 </button>
-            </form>
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="themes">
+                    <i data-lucide="palette" class="w-4 h-4"></i> مظاهر
+                </button>
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="effects">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i> مؤثرات
+                </button>
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="boosts">
+                    <i data-lucide="zap" class="w-4 h-4"></i> مُعززات
+                </button>
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="powerups">
+                    <i data-lucide="battery-charging" class="w-4 h-4"></i> قدرات
+                </button>
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="avatars">
+                    <i data-lucide="user-circle" class="w-4 h-4"></i> أفاتار
+                </button>
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="titles">
+                    <i data-lucide="award" class="w-4 h-4"></i> ألقاب
+                </button>
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="mystery">
+                    <i data-lucide="box" class="w-4 h-4"></i> صناديق
+                </button>
+            </div>
 
-            <div id="ui-rewards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full"></div>
+            <!-- Product Grid -->
+            <div id="ui-store-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                <!-- Products will be injected here by app.js -->
+            </div>
+            
+            <!-- Empty State for Grid (Hidden by default) -->
+            <div id="ui-store-grid-empty" class="hidden glass-panel rounded-2xl p-8 text-center opacity-70 border-dashed border-2 border-white/10 w-full mt-4">
+                <i data-lucide="search-x" class="w-10 h-10 text-white/30 mx-auto mb-3"></i>
+                <p class="text-sm text-white/70">لا توجد عناصر في هذا القسم حالياً.</p>
+            </div>
 
+            <!-- Inventory Section -->
             <div class="mt-10 w-full">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="backpack" class="w-5 h-5 text-emerald-400"></i> مخزون المكافآت (مشترياتي)
+                    <i data-lucide="backpack" class="w-5 h-5 text-emerald-400"></i> خزانة المقتنيات
                 </h3>
-                <div id="ui-inventory-container" class="flex flex-col gap-3 w-full"></div>
+                <div id="ui-inventory-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                    <!-- Owned consumables injected here -->
+                </div>
+                <!-- Empty State for Inventory -->
+                <div id="ui-inventory-empty" class="hidden glass-panel rounded-2xl p-6 text-center opacity-50 border-dashed border-2 border-white/10 w-full">
+                    <i data-lucide="package-open" class="w-8 h-8 text-white/30 mx-auto mb-2"></i>
+                    <p class="text-sm text-white/70">الخزانة فارغة حالياً. قم بشراء معززات أو قدرات من المتجر.</p>
+                </div>
             </div>
         </section>
 
