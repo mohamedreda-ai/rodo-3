@@ -319,6 +319,28 @@ nav.fixed.bottom-4 button {
     width: 100% !important;
 }
 
+/* FIX 1: Schedule / Subject Entry Form - Time & Add Button Row */
+@media (max-width: 767px) {
+    #view-schedule form .flex:not(.flex-col),
+    #view-schedule form .flex-row {
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+    }
+    #view-schedule form input[type="time"],
+    #view-schedule form input[type="number"] {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        width: auto !important;
+    }
+    #view-schedule form button:not(.w-full) {
+        flex: 0 0 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
 /* 4. Grids (Single Column Default) */
 #ui-avatar-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -336,11 +358,38 @@ nav.fixed.bottom-4 button {
     padding: 0.75rem !important;
 }
 
+/* FIX 2: Cumulative Study Record Empty State Centering */
+#cumulative-empty-state,
+#study-record-empty,
+[id*="cumulative"] .empty-state,
+[id*="cumulative"] > div.flex-col.items-center.text-gray-400,
+#view-statistics .flex-col.items-center.text-gray-400 {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
 /* 5. Focus Timer Scaling */
 #view-focus .w-64 { width: 14rem !important; }
 #view-focus .h-64 { height: 14rem !important; }
 #stopwatch-display { font-size: 2.75rem !important; }
 #view-focus .gap-4 { gap: 0.75rem !important; }
+
+/* FIX 3: Focus Timer Progress Ring Overflow */
+#stopwatch-spinner,
+#stopwatch-ring-bg,
+#view-focus svg.absolute {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    transform-origin: center !important;
+}
 
 /* 6. Weakness Priority Buttons */
 .prio-btn {
