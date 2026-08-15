@@ -24,6 +24,27 @@ function getLocalDateStr(dateObj = new Date()) {
     return new Date(dateObj.getTime() - offset).toISOString().split('T')[0];
 }
 
+function getNextPaymentDate(dateString) {
+    if (!dateString) return '';
+    const parts = dateString.split('-');
+    if (parts.length !== 3) return '';
+    
+    let year = parseInt(parts[0], 10);
+    let month = parseInt(parts[1], 10);
+    let day = parseInt(parts[2], 10);
+    
+    month += 1;
+    if (month > 12) {
+        month = 1;
+        year += 1;
+    }
+    
+    const maxDaysInNewMonth = new Date(year, month, 0).getDate();
+    const safeDay = Math.min(day, maxDaysInNewMonth);
+    
+    return `${year}-${String(month).padStart(2, '0')}-${String(safeDay).padStart(2, '0')}`;
+}
+
 const STORE_CATALOG = [
     // Boosts
     { id: 'boost_xp_1', title: 'مضاعف الخبرة (ساعة)', desc: 'يضاعف نقاط الخبرة المكتسبة 1.5x لمدة ساعة.', cost: 150, category: 'boosts', icon: 'zap', rarity: 'rare', type: 'boost', boostType: 'xp', multiplier: 1.5, duration: 60 * 60 * 1000 },
@@ -137,7 +158,11 @@ const INITIAL_STATE = {
     weeklyStats: { tasks: 0, xp: 0, focus: 0 },
     weeklyReports: [],
     examSubjects: [],
-    weaknesses: [],
+    weaknesses: [], // Preserved for backward compatibility
+    errorBank: {
+        errors: [],
+        lastSmartReviewDate: null
+    },
     studySubjects: [],
     activeSession: { isRunning: false, startTime: null, elapsedMs: 0 },
     heatmapData: {},
@@ -157,6 +182,13 @@ let pendingRandomEvent = null;
 let stopwatchInterval = null;
 let currentStoreCategory = 'all';
 let storeBoostInterval = null;
+
+// Error Bank V2 Variables
+let currentErrorFilterSubject = 'all';
+let currentErrorFilterStatus = 'all';
+let currentErrorSearch = '';
+let errorRenderLimit = 20;
+let currentActiveErrorId = null;
 
 try {
     const savedState = localStorage.getItem('hsQuestPremium_v4');
@@ -196,6 +228,34 @@ try {
             if (!Array.isArray(state.store.activeEffects)) state.store.activeEffects = [];
         }
 
+        if (!state.errorBank || !Array.isArray(state.errorBank.errors)) {
+            state.errorBank = { errors: [], lastSmartReviewDate: null };
+        }
+
+        // Idempotent Legacy Migration: Weaknesses -> Error Bank V2
+        if (state.weaknesses && state.weaknesses.length > 0) {
+            state.weaknesses.forEach(w => {
+                const exists = state.errorBank.errors.find(e => e.id === w.id);
+                if (!exists) {
+                    state.errorBank.errors.push({
+                        id: w.id,
+                        subjectName: w.subject || 'غير محدد',
+                        text: w.desc || '',
+                        lessonLearned: '',
+                        type: 'other',
+                        severity: w.priority || 'medium',
+                        status: w.solved === true ? 'reviewed' : 'new',
+                        repetitionCount: 0,
+                        reviewCount: 0,
+                        dateAdded: w.date || new Date().toLocaleDateString('ar-EG'),
+                        lastReviewedAt: null,
+                        lastRepeatedAt: null,
+                        masteredAt: null
+                    });
+                }
+            });
+        }
+
         if (typeof state.xp !== 'number' || !isFinite(state.xp) || state.xp < 0) state.xp = 0;
         if (typeof state.coins !== 'number' || !isFinite(state.coins) || state.coins < 0) state.coins = 0;
         if (typeof state.streak !== 'number' || !isFinite(state.streak) || state.streak < 0) state.streak = 0;
@@ -217,14 +277,67 @@ try {
     state = JSON.parse(JSON.stringify(INITIAL_STATE));
 }
 
+let isStorageWarningActive = false;
+
 function saveState() {
     checkAchievements();
     try { 
         localStorage.setItem('hsQuestPremium_v4', JSON.stringify(state)); 
+        isStorageWarningActive = false;
     } catch (e) {
         console.warn("فشل في حفظ البيانات. تأكد من أن مساحة التخزين غير ممتلئة أو أنك لا تستخدم التصفح الخفي.");
+        if (!isStorageWarningActive) {
+            isStorageWarningActive = true;
+            showStorageError();
+        }
     }
     updateGlobalUI();
+}
+
+function showStorageError() {
+    const container = document.getElementById('toast-container');
+    if(!container) return;
+    const toast = document.createElement('div');
+    toast.className = `flex flex-col gap-3 p-4 rounded-2xl glass-panel shadow-2xl border border-red-500/50 bg-red-500/10 toast-enter pointer-events-auto max-w-[92vw]`;
+    toast.innerHTML = `
+        <div class="flex items-start gap-3">
+            <div class="shrink-0 bg-black/40 p-2 rounded-full"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-400"></i></div>
+            <div class="flex-1">
+                <h4 class="text-sm font-bold text-white mb-1">مساحة التخزين ممتلئة</h4>
+                <p class="text-xs text-white/80 leading-snug">بياناتك الحالية ما زالت موجودة داخل التطبيق، لكن قد لا يتم حفظ التغييرات الجديدة. يرجى تصدير بياناتك الآن.</p>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-1">
+            <button onclick="exportData()" class="flex-1 bg-red-600 hover:bg-red-500 text-white px-4 py-2 min-h-[44px] rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                <i data-lucide="download" class="w-4 h-4"></i> تصدير البيانات
+            </button>
+            <button onclick="this.parentElement.parentElement.remove(); isStorageWarningActive = false;" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 min-h-[44px] rounded-lg text-xs font-bold transition-colors">
+                إغلاق
+            </button>
+        </div>
+    `;
+    container.appendChild(toast);
+    lucide.createIcons({ root: toast });
+}
+
+function exportData() {
+    try {
+        const dataStr = JSON.stringify(state);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        const date = new Date().toISOString().split('T')[0];
+        a.download = `rodo-backup-${date}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('تم تصدير البيانات بنجاح.', 'success');
+    } catch (e) {
+        console.error("Export failed", e);
+        showToast('حدث خطأ أثناء تصدير البيانات.', 'info');
+    }
 }
 
 function saveSnapshot() { 
@@ -241,6 +354,7 @@ function restoreSnapshot() {
     renderStats(); renderJourney(); renderProfile(); renderSchedule(); renderHabits();
     renderWeeklyHistory();
     renderHeatmap();
+    renderErrorBank();
     if (isAudioInitialized && synth) synth.triggerAttackRelease("C3", "16n");
 }
 
@@ -827,10 +941,8 @@ function showToast(message, type = 'info', allowUndo = false, localSnapshot = nu
                 saveState();
                 renderTasks(); renderGoals(); renderStore();
                 renderStats(); renderJourney(); renderProfile(); renderSchedule(); renderHabits();
-                renderWeeklyHistory(); renderHeatmap();
+                renderWeeklyHistory(); renderHeatmap(); renderErrorBank();
                 if (isAudioInitialized && synth) synth.triggerAttackRelease("C3", "16n");
-            } else {
-                restoreSnapshot();
             }
             toast.classList.replace('toast-enter', 'toast-leave');
             setTimeout(() => toast.remove(), 400);
@@ -876,7 +988,7 @@ function switchTab(tabId) {
     if (tabId === 'profile') { renderProfile(); renderAchievements(); }
     if (tabId === 'schedule') renderSchedule();
     if (tabId === 'exams') renderExams();
-    if (tabId === 'weaknesses') renderWeaknesses();
+    if (tabId === 'weaknesses') renderErrorBank();
     if (tabId === 'focus') { updateStopwatchUI(true); renderHeatmap(); renderStudyTimeTable(); renderRecentSessions(); }
     
     const navBar = document.querySelector('nav');
@@ -1199,6 +1311,7 @@ function requestReset() {
         renderHeatmap();
         renderStudyTimeTable();
         renderRecentSessions();
+        renderErrorBank();
 
         // 5. Reset Button UI
         resetClickCount = 0;
@@ -2168,7 +2281,7 @@ function calculateAdvancedStats() {
 
     let longestDayMins = 0;
     for (let d in minutesByDate) {
-        if (minutesByDate[d] > longestDayMins) longestDayMins = minutesByDate[d];
+        if (minutesByDate[d] > longestDayMins) longestDayMins = longestDayMins;
     }
 
     let bestTime = '--';
@@ -2316,6 +2429,7 @@ function renderStats() {
     }
 
     renderRecentSessions();
+    renderErrorAnalytics();
 }
 
 function renderProductivityChart() {
@@ -2501,16 +2615,88 @@ function addScheduleItem(e) {
     e.preventDefault();
     const inputTitle = document.getElementById('new-schedule-title');
     const inputTime = document.getElementById('new-schedule-time');
+    const inputPaymentDate = document.getElementById('new-schedule-payment-date');
     if(!inputTitle || !inputTime) return;
 
     const title = inputTitle.value.trim();
     const time = inputTime.value.trim();
+    const initialPaymentDate = inputPaymentDate ? inputPaymentDate.value : '';
     if(!title) return;
 
     const list = activeScheduleTab === 'lessons' ? state.lessons : state.studyPlan;
-    list.push({ id: Date.now(), day: selectedScheduleDay, title, time, completed: false });
+    
+    let newItem = { id: Date.now(), day: selectedScheduleDay, title, time, completed: false };
+    
+    if (initialPaymentDate) {
+        newItem.lastPaymentDate = initialPaymentDate;
+        newItem.paymentDate = getNextPaymentDate(initialPaymentDate);
+    }
+    
+    list.push(newItem);
+    
     inputTitle.value = ''; inputTime.value = '';
+    if(inputPaymentDate) inputPaymentDate.value = '';
     saveState(); renderScheduleItems(); showToast('تمت الإضافة للجدول بنجاح!', 'success');
+}
+
+function openRecordPaymentModal(id, e) {
+    e.stopPropagation();
+    const list = activeScheduleTab === 'lessons' ? state.lessons : state.studyPlan;
+    const item = list.find(i => i.id === id);
+    if(!item) return;
+    
+    const modal = document.getElementById('modal-record-payment');
+    const content = document.getElementById('modal-record-payment-content');
+    const dateInput = document.getElementById('record-payment-date');
+    const idInput = document.getElementById('record-payment-item-id');
+    
+    if(!modal || !content || !dateInput || !idInput) return;
+    
+    idInput.value = id;
+    dateInput.value = getLocalDateStr(); 
+    
+    modal.classList.remove('hidden'); modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.remove('opacity-0'); modal.classList.add('modal-overlay-enter');
+        content.classList.remove('opacity-0', 'scale-95'); content.classList.add('modal-animate-enter');
+    }, 10);
+}
+
+function closeRecordPaymentModal() {
+    const modal = document.getElementById('modal-record-payment');
+    if(!modal) return;
+    modal.classList.remove('modal-overlay-enter'); modal.classList.add('opacity-0');
+    setTimeout(() => { modal.classList.add('hidden'); modal.style.display = 'none'; }, 300);
+}
+
+function confirmRecordPayment() {
+    const dateInput = document.getElementById('record-payment-date');
+    const idInput = document.getElementById('record-payment-item-id');
+    if(!dateInput || !idInput) return;
+    
+    const actualDate = dateInput.value;
+    const id = parseInt(idInput.value, 10);
+    
+    if(!actualDate) {
+        showToast('يرجى إدخال تاريخ الدفع الفعلي.', 'info');
+        return;
+    }
+    
+    const list = activeScheduleTab === 'lessons' ? state.lessons : state.studyPlan;
+    const item = list.find(i => i.id === id);
+    if(!item) return;
+    
+    item.lastPaymentDate = actualDate;
+    item.paymentDate = getNextPaymentDate(actualDate);
+    
+    if (item.hasOwnProperty('isPaid')) {
+        delete item.isPaid;
+    }
+    
+    saveState();
+    renderScheduleItems();
+    closeRecordPaymentModal();
+    showToast('تم تسجيل الدفع وبدء دورة شهرية جديدة بنجاح!', 'success');
 }
 
 function toggleScheduleItem(id) {
@@ -2555,19 +2741,65 @@ function renderScheduleItems() {
         return;
     }
     
-    container.innerHTML = dayItems.map(item => `
-    <div onclick="toggleScheduleItem(${item.id})" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}" class="glass-panel p-3.5 min-h-[44px] rounded-2xl flex items-center justify-between cursor-pointer btn-press border ${item.completed ? `border-${colorClass}-500/40 bg-${colorClass}-500/10 opacity-60` : 'border-white/5 hover:bg-white/[0.02]'}">
-        <div class="flex items-center gap-3 flex-1 overflow-hidden">
-            <div class="w-6 h-6 rounded-md border flex items-center justify-center shrink-0 ${item.completed ? `bg-${colorClass}-500 border-${colorClass}-500 text-white` : 'border-white/20'}">
-                ${item.completed ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
+    container.innerHTML = dayItems.map(item => {
+        let paymentHtml = '';
+        
+        if (item.paymentDate) {
+            let statusClass = 'payment-status-normal';
+            let statusText = '';
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const pDate = new Date(item.paymentDate);
+            pDate.setHours(0, 0, 0, 0);
+            
+            const diffTime = pDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                statusClass = 'payment-status-overdue';
+                statusText = 'متأخر عن الدفع';
+            } else if (diffDays === 0) {
+                statusClass = 'payment-status-due';
+                statusText = 'مستحق اليوم';
+            } else if (diffDays <= 3) {
+                statusClass = 'payment-status-soon';
+                statusText = 'مستحق قريباً';
+            } else if (diffDays <= 7) {
+                statusClass = 'payment-status-upcoming';
+                statusText = 'مستحق خلال أسبوع';
+            } else {
+                statusClass = 'payment-status-normal';
+                statusText = `موعد الدفع: ${new Date(item.paymentDate).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' })}`;
+            }
+
+            paymentHtml = `
+                <div class="payment-info-container">
+                    <span class="payment-status-badge ${statusClass}">
+                        <i data-lucide="credit-card" class="w-3 h-3"></i> ${statusText}
+                    </span>
+                    <button onclick="openRecordPaymentModal(${item.id}, event)" class="btn-record-payment">
+                        <i data-lucide="calendar-check" class="w-3 h-3"></i> تسجيل الدفع
+                    </button>
+                </div>
+            `;
+        }
+
+        return `
+        <div onclick="toggleScheduleItem(${item.id})" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}" class="glass-panel p-3.5 min-h-[44px] rounded-2xl flex items-center justify-between cursor-pointer btn-press border ${item.completed ? `border-${colorClass}-500/40 bg-${colorClass}-500/10 opacity-60` : 'border-white/5 hover:bg-white/[0.02]'}">
+            <div class="flex items-center gap-3 flex-1 overflow-hidden">
+                <div class="w-6 h-6 rounded-md border flex items-center justify-center shrink-0 ${item.completed ? `bg-${colorClass}-500 border-${colorClass}-500 text-white` : 'border-white/20'}">
+                    ${item.completed ? '<i data-lucide="check" class="w-4 h-4"></i>' : ''}
+                </div>
+                <div class="flex flex-col min-w-0 w-full">
+                    <span class="text-base font-bold truncate ${item.completed ? 'line-through text-white/40' : 'text-white/90'}">${escapeHTML(item.title)}</span>
+                    ${item.time ? `<span class="text-xs text-${colorClass}-400 font-medium flex items-center gap-1 mt-0.5"><i data-lucide="clock" class="w-3 h-3"></i> ${escapeHTML(item.time)}</span>` : ''}
+                    ${paymentHtml}
+                </div>
             </div>
-            <div class="flex flex-col min-w-0">
-                <span class="text-base font-bold truncate ${item.completed ? 'line-through text-white/40' : 'text-white/90'}">${escapeHTML(item.title)}</span>
-                ${item.time ? `<span class="text-xs text-${colorClass}-400 font-medium flex items-center gap-1 mt-0.5"><i data-lucide="clock" class="w-3 h-3"></i> ${escapeHTML(item.time)}</span>` : ''}
-            </div>
-        </div>
-        <button onclick="deleteScheduleItem(${item.id}, event)" aria-label="حذف المادة" class="w-11 h-11 flex items-center justify-center hover:bg-red-500/10 text-white/20 hover:text-red-400 rounded-lg transition-colors shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-    </div>`).join('');
+            <button onclick="deleteScheduleItem(${item.id}, event)" aria-label="حذف المادة" class="w-11 h-11 flex items-center justify-center hover:bg-red-500/10 text-white/20 hover:text-red-400 rounded-lg transition-colors shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+        </div>`;
+    }).join('');
     lucide.createIcons({ root: container });
 }
 
@@ -2876,118 +3108,641 @@ function renderExams() {
     lucide.createIcons({ root: container });
 }
 
-let currentWeaknessPriority = 'medium';
-function setWeaknessPriority(prio) {
-    currentWeaknessPriority = prio;
-    document.querySelectorAll('.prio-btn').forEach(btn => {
-        btn.className = 'prio-btn flex-1 py-2 min-h-[44px] flex items-center justify-center rounded-lg border border-white/5 bg-white/5 text-[11px] font-bold text-white/40 transition-all';
-    });
-    const activeBtn = document.getElementById(`prio-${prio}`);
-    if (prio === 'low') activeBtn.className = 'prio-btn flex-1 py-2 min-h-[44px] flex items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-[11px] font-bold text-emerald-400 transition-all';
-    if (prio === 'medium') activeBtn.className = 'prio-btn flex-1 py-2 min-h-[44px] flex items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/10 text-[11px] font-bold text-rose-400 transition-all';
-    if (prio === 'high') activeBtn.className = 'prio-btn flex-1 py-2 min-h-[44px] flex items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-[11px] font-bold text-red-400 transition-all animate-pulse';
-}
+// ==========================================================================
+// ERROR BANK V2 & ANALYTICS
+// ==========================================================================
 
-function addWeakness(e) {
-    e.preventDefault();
-    const subjectInput = document.getElementById('new-weakness-subject');
-    const descInput = document.getElementById('new-weakness-desc');
-    
-    if (!subjectInput.value.trim() || !descInput.value.trim()) return;
-    
-    state.weaknesses.unshift({
-        id: Date.now(),
-        subject: subjectInput.value.trim(),
-        desc: descInput.value.trim(),
-        priority: currentWeaknessPriority,
-        solved: false,
-        date: new Date().toLocaleDateString('ar-EG')
-    });
-    
-    subjectInput.value = '';
-    descInput.value = '';
-    setWeaknessPriority('medium');
-    saveState();
-    renderWeaknesses();
-    showToast('تم رصد الثغرة بنجاح. المواجهة هي أول خطوة للنصر!', 'success');
-}
+function initErrorBank() {
+    const formAddError = document.getElementById('form-add-error');
+    if (formAddError) formAddError.addEventListener('submit', addError);
 
-function toggleWeakness(id) {
-    const w = state.weaknesses.find(item => item.id === id);
-    if (!w) return;
-    
-    const localSnapshot = saveSnapshot();
-    w.solved = !w.solved;
-    
-    if (w.solved) {
-        const finalXp = Math.floor(100 * getBoostMultiplier('xp'));
-        const finalCoins = Math.floor(100 * getBoostMultiplier('coin'));
-        state.xp += finalXp; state.coins += finalCoins;
-        state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
-        playSound('reward');
-        showToast(`رائع! حولت نقطة ضعف إلى قوة. +${finalXp} XP وذهب`, 'success', true, localSnapshot);
-    } else {
-        const finalXp = Math.floor(100 * getBoostMultiplier('xp'));
-        const finalCoins = Math.floor(100 * getBoostMultiplier('coin'));
-        state.xp = Math.max(0, state.xp - finalXp);
-        state.coins = Math.max(0, state.coins - finalCoins);
-        showToast('تم التراجع عن حل الثغرة', 'info', true, localSnapshot);
+    const searchInput = document.getElementById('error-search');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentErrorSearch = e.target.value.trim().toLowerCase();
+                errorRenderLimit = 20;
+                renderErrorBank();
+            }, 250);
+        });
     }
-    
-    saveState();
-    renderWeaknesses();
+
+    const loadMoreBtn = document.getElementById('error-load-more');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            errorRenderLimit += 20;
+            renderErrorBank();
+        });
+    }
+
+    const btnSmartReview = document.getElementById('btn-smart-review');
+    if (btnSmartReview) btnSmartReview.addEventListener('click', triggerSmartReview);
+
+    const btnCloseDetail = document.getElementById('btn-close-error-detail');
+    if (btnCloseDetail) btnCloseDetail.addEventListener('click', closeErrorDetail);
+
+    const btnActionRepeat = document.getElementById('btn-error-action-repeat');
+    if (btnActionRepeat) btnActionRepeat.addEventListener('click', repeatError);
+
+    const btnActionReview = document.getElementById('btn-error-action-review');
+    if (btnActionReview) btnActionReview.addEventListener('click', openErrorReview);
+
+    const btnActionMaster = document.getElementById('btn-error-action-master');
+    if (btnActionMaster) btnActionMaster.addEventListener('click', masterError);
+
+    const btnActionDelete = document.getElementById('btn-error-action-delete');
+    if (btnActionDelete) btnActionDelete.addEventListener('click', deleteError);
+
+    const formReview = document.getElementById('form-error-review');
+    if (formReview) formReview.addEventListener('submit', submitErrorReview);
+
+    const btnCloseReview = document.getElementById('btn-close-error-review');
+    if (btnCloseReview) btnCloseReview.addEventListener('click', closeErrorReview);
+
+    const btnNavToErrorBank = document.getElementById('btn-nav-to-error-bank');
+    if (btnNavToErrorBank) btnNavToErrorBank.addEventListener('click', () => switchTab('weaknesses'));
+
+    const errorLessonInput = document.getElementById('error-lesson-input');
+    if (errorLessonInput) {
+        errorLessonInput.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+    }
+
+    const errorTypeInput = document.getElementById('error-type-input');
+    if (errorTypeInput) {
+        errorTypeInput.addEventListener('focus', function() {
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+    }
 }
 
-function deleteWeakness(id, e) {
-    e.stopPropagation();
+function isErrorNeedsReview(err) {
+    if (err.status === 'new') return true;
+    if (err.status === 'reviewed') {
+        if (!err.lastReviewedAt) return true;
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        if (Date.now() - err.lastReviewedAt > sevenDays) return true;
+        if (err.lastRepeatedAt && err.lastRepeatedAt > err.lastReviewedAt) return true;
+    }
+    return false;
+}
+
+function triggerSmartReview() {
+    currentErrorFilterSubject = 'all';
+    currentErrorFilterStatus = 'needs_review';
+    currentErrorSearch = '';
+    const searchInput = document.getElementById('error-search');
+    if (searchInput) searchInput.value = '';
+    errorRenderLimit = 20;
+    renderErrorBank();
+    showToast('تم تفعيل المراجعة الذكية. ركز على هذه الأخطاء!', 'info');
+}
+
+function addError(e) {
+    e.preventDefault();
+    const subjectInput = document.getElementById('new-error-subject');
+    const severityInput = document.getElementById('new-error-severity');
+    const textInput = document.getElementById('new-error-text');
+    const typeInput = document.getElementById('new-error-type');
+    const lessonInput = document.getElementById('new-error-lesson');
+
+    if (!subjectInput || !textInput) return;
+
+    const subjectName = subjectInput.value.trim();
+    const text = textInput.value.trim();
+    
+    if (!subjectName || !text) return;
+
+    const newError = {
+        id: Date.now(),
+        subjectName: subjectName,
+        text: text,
+        lessonLearned: lessonInput ? lessonInput.value.trim() : '',
+        type: typeInput ? typeInput.value : 'other',
+        severity: severityInput ? severityInput.value : 'medium',
+        status: 'new',
+        repetitionCount: 0,
+        reviewCount: 0,
+        dateAdded: new Date().toLocaleDateString('ar-EG'),
+        lastReviewedAt: null,
+        lastRepeatedAt: null,
+        masteredAt: null
+    };
+
+    state.errorBank.errors.unshift(newError);
+    saveState();
+
+    subjectInput.value = '';
+    textInput.value = '';
+    if (lessonInput) lessonInput.value = '';
+    if (typeInput) typeInput.value = 'other';
+    if (severityInput) severityInput.value = 'medium';
+
+    currentErrorFilterSubject = 'all';
+    currentErrorFilterStatus = 'all';
+    errorRenderLimit = 20;
+    renderErrorBank();
+    showToast('تم تسجيل الخطأ بنجاح. المواجهة هي أول خطوة للنصر!', 'success');
+}
+
+function openErrorDetail(id) {
+    const err = state.errorBank.errors.find(e => e.id === id);
+    if (!err) return;
+
+    currentActiveErrorId = id;
+
+    const elSubject = document.getElementById('detail-error-subject');
+    const elStatus = document.getElementById('detail-error-status');
+    const elDate = document.getElementById('detail-error-date');
+    const elText = document.getElementById('detail-error-text');
+    const elType = document.getElementById('detail-error-type');
+    const elSeverity = document.getElementById('detail-error-severity');
+    const elRepetition = document.getElementById('detail-error-repetition');
+    const elLastReview = document.getElementById('detail-error-last-review');
+    const elLesson = document.getElementById('detail-error-lesson');
+
+    if (elSubject) elSubject.innerText = err.subjectName;
+    if (elDate) elDate.innerText = err.dateAdded;
+    if (elText) elText.innerText = err.text;
+    if (elRepetition) elRepetition.innerText = err.repetitionCount;
+    if (elLesson) elLesson.innerText = err.lessonLearned || 'لم يتم كتابة درس مستفاد بعد.';
+
+    if (elStatus) {
+        if (err.status === 'new') {
+            elStatus.innerText = 'جديد';
+            elStatus.className = 'text-[10px] font-bold px-2 py-1 rounded-md border text-rose-400 border-rose-500/30 bg-rose-500/10';
+        } else if (err.status === 'reviewed') {
+            elStatus.innerText = 'تمت المراجعة';
+            elStatus.className = 'text-[10px] font-bold px-2 py-1 rounded-md border text-blue-400 border-blue-500/30 bg-blue-500/10';
+        } else {
+            elStatus.innerText = 'مُتقن';
+            elStatus.className = 'text-[10px] font-bold px-2 py-1 rounded-md border text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+        }
+    }
+
+    if (elType) {
+        const typeMap = { 'conceptual': 'مفاهيمي', 'calculation': 'حسابي', 'careless': 'قلة تركيز', 'other': 'أخرى' };
+        elType.innerText = typeMap[err.type] || 'أخرى';
+    }
+
+    if (elSeverity) {
+        const sevMap = { 'low': 'بسيطة', 'medium': 'متوسطة', 'high': 'حرجة 🔥' };
+        elSeverity.innerText = sevMap[err.severity] || 'متوسطة';
+    }
+
+    if (elLastReview) {
+        if (err.lastReviewedAt) {
+            elLastReview.innerText = new Date(err.lastReviewedAt).toLocaleDateString('ar-EG');
+        } else {
+            elLastReview.innerText = 'لم يراجع';
+        }
+    }
+
+    const btnMaster = document.getElementById('btn-error-action-master');
+    if (btnMaster) {
+        if (err.status === 'reviewed' && err.lessonLearned.trim() !== '') {
+            btnMaster.classList.remove('hidden');
+            btnMaster.classList.add('flex');
+        } else {
+            btnMaster.classList.add('hidden');
+            btnMaster.classList.remove('flex');
+        }
+    }
+
+    const modal = document.getElementById('modal-error-detail');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.classList.add('modal-overlay-enter');
+            const content = modal.firstElementChild;
+            if (content) {
+                content.classList.remove('opacity-0', 'scale-95');
+                content.classList.add('modal-animate-enter');
+            }
+        }, 10);
+    }
+}
+
+function closeErrorDetail() {
+    const modal = document.getElementById('modal-error-detail');
+    if (!modal) return;
+    modal.classList.remove('modal-overlay-enter');
+    modal.classList.add('opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        currentActiveErrorId = null;
+    }, 300);
+}
+
+function repeatError() {
+    if (!currentActiveErrorId) return;
+    const err = state.errorBank.errors.find(e => e.id === currentActiveErrorId);
+    if (!err) return;
+
     const localSnapshot = saveSnapshot();
-    state.weaknesses = state.weaknesses.filter(w => w.id !== id);
+    err.repetitionCount++;
+    err.lastRepeatedAt = Date.now();
+
+    if (err.status === 'mastered') {
+        err.status = 'reviewed';
+    }
+
     saveState();
-    renderWeaknesses();
-    showToast('تم حذف السجل', 'info', true, localSnapshot);
+    renderErrorBank();
+    openErrorDetail(currentActiveErrorId);
+    showToast('تم تسجيل التكرار. لا بأس، الاستمرارية هي الحل!', 'info', true, localSnapshot);
 }
 
-function renderWeaknesses() {
-    const container = document.getElementById('ui-weaknesses-container');
-    if (!container) return;
-    
-    if (state.weaknesses.length === 0) {
-        container.innerHTML = `<div class="glass-panel rounded-3xl p-12 text-center opacity-70 border-dashed border-2 border-white/10"><i data-lucide="shield-off" class="w-12 h-12 text-white/20 mx-auto mb-4"></i><p class="text-sm text-white/50">لا توجد ثغرات مسجلة. أنت إما مثالي أو لا تعترف بنقاط ضعفك!</p></div>`;
-        lucide.createIcons({ root: container });
+function openErrorReview() {
+    if (!currentActiveErrorId) return;
+    const err = state.errorBank.errors.find(e => e.id === currentActiveErrorId);
+    if (!err) return;
+
+    const typeInput = document.getElementById('error-type-input');
+    const lessonInput = document.getElementById('error-lesson-input');
+
+    if (typeInput) typeInput.value = err.type;
+    if (lessonInput) lessonInput.value = err.lessonLearned;
+
+    const modal = document.getElementById('modal-error-review');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.classList.add('modal-overlay-enter');
+            const content = modal.firstElementChild;
+            if (content) {
+                content.classList.remove('opacity-0', 'scale-95');
+                content.classList.add('modal-animate-enter');
+            }
+        }, 10);
+    }
+}
+
+function closeErrorReview() {
+    const modal = document.getElementById('modal-error-review');
+    if (!modal) return;
+    modal.classList.remove('modal-overlay-enter');
+    modal.classList.add('opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }, 300);
+}
+
+function submitErrorReview(e) {
+    e.preventDefault();
+    if (!currentActiveErrorId) return;
+    const err = state.errorBank.errors.find(e => e.id === currentActiveErrorId);
+    if (!err) return;
+
+    const typeInput = document.getElementById('error-type-input');
+    const lessonInput = document.getElementById('error-lesson-input');
+
+    if (!lessonInput || lessonInput.value.trim() === '') {
+        showToast('يجب كتابة الدرس المستفاد!', 'info');
         return;
     }
+
+    const localSnapshot = saveSnapshot();
+
+    if (typeInput) err.type = typeInput.value;
+    err.lessonLearned = lessonInput.value.trim();
+    err.reviewCount++;
+    err.lastReviewedAt = Date.now();
+
+    if (err.status === 'new') {
+        err.status = 'reviewed';
+    }
+
+    const finalXp = Math.floor(20 * getBoostMultiplier('xp'));
+    const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
+    state.xp += finalXp;
+    state.coins += finalCoins;
+
+    saveState();
+    renderErrorBank();
+    closeErrorReview();
+    openErrorDetail(currentActiveErrorId);
+    playSound('pop');
+    showToast(`تمت المراجعة بنجاح! +${finalXp} XP`, 'success', true, localSnapshot);
+}
+
+function masterError() {
+    if (!currentActiveErrorId) return;
+    const err = state.errorBank.errors.find(e => e.id === currentActiveErrorId);
+    if (!err) return;
+
+    if (err.status !== 'reviewed' || err.lessonLearned.trim() === '') {
+        showToast('يجب مراجعة الخطأ وكتابة الدرس المستفاد أولاً.', 'info');
+        return;
+    }
+
+    const localSnapshot = saveSnapshot();
+
+    err.status = 'mastered';
+    err.masteredAt = Date.now();
+
+    const finalXp = Math.floor(50 * getBoostMultiplier('xp'));
+    const finalCoins = Math.floor(20 * getBoostMultiplier('coin'));
+    state.xp += finalXp;
+    state.coins += finalCoins;
+
+    saveState();
+    renderErrorBank();
+    openErrorDetail(currentActiveErrorId);
+    playSound('reward');
+    showToast(`عمل رائع! لقد أتقنت هذا الخطأ. +${finalXp} XP`, 'success', true, localSnapshot);
+}
+
+function deleteError() {
+    if (!currentActiveErrorId) return;
+    if (!confirm('هل أنت متأكد من حذف هذا الخطأ نهائياً؟')) return;
+
+    const localSnapshot = saveSnapshot();
+    state.errorBank.errors = state.errorBank.errors.filter(e => e.id !== currentActiveErrorId);
     
-    container.innerHTML = state.weaknesses.map(w => {
-        const prioLabel = w.priority === 'high' ? 'حرجة' : w.priority === 'medium' ? 'متوسطة' : 'بسيطة';
-        const prioColor = w.priority === 'high' ? 'text-red-400 bg-red-500/10 border-red-500/20' : w.priority === 'medium' ? 'text-rose-400 bg-rose-500/10 border-rose-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+    saveState();
+    renderErrorBank();
+    closeErrorDetail();
+    showToast('تم حذف الخطأ بنجاح.', 'info', true, localSnapshot);
+}
+
+function renderErrorBank() {
+    const totalEl = document.getElementById('error-bank-total');
+    if (totalEl) totalEl.innerText = state.errorBank.errors.length;
+
+    // Extract unique subjects
+    const subjects = [...new Set(state.errorBank.errors.map(e => e.subjectName))].filter(Boolean);
+    const subjectFiltersContainer = document.getElementById('error-subject-filters');
+    if (subjectFiltersContainer) {
+        let pillsHtml = `<button onclick="currentErrorFilterSubject='all'; errorRenderLimit=20; renderErrorBank();" class="error-filter-pill px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold border transition-all ${currentErrorFilterSubject === 'all' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}">الكل</button>`;
+        subjects.forEach(sub => {
+            const isSel = currentErrorFilterSubject === sub;
+            pillsHtml += `<button onclick="currentErrorFilterSubject='${escapeHTML(sub)}'; errorRenderLimit=20; renderErrorBank();" class="error-filter-pill px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold border transition-all ${isSel ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}">${escapeHTML(sub)}</button>`;
+        });
+        subjectFiltersContainer.innerHTML = pillsHtml;
+    }
+
+    // Status Filters
+    const statusFiltersContainer = document.getElementById('error-status-filters');
+    if (statusFiltersContainer) {
+        const statuses = [
+            { id: 'all', label: 'الكل' },
+            { id: 'needs_review', label: 'تحتاج مراجعة' },
+            { id: 'new', label: 'جديد' },
+            { id: 'reviewed', label: 'تمت المراجعة' },
+            { id: 'mastered', label: 'مُتقن' },
+            { id: 'repeated', label: 'متكرر' }
+        ];
+        let statusHtml = '';
+        statuses.forEach(st => {
+            const isSel = currentErrorFilterStatus === st.id;
+            statusHtml += `<button onclick="currentErrorFilterStatus='${st.id}'; errorRenderLimit=20; renderErrorBank();" class="error-filter-pill px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold border transition-all ${isSel ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}">${st.label}</button>`;
+        });
+        statusFiltersContainer.innerHTML = statusHtml;
+    }
+
+    // Filter Errors
+    let filtered = state.errorBank.errors.filter(err => {
+        if (currentErrorFilterSubject !== 'all' && err.subjectName !== currentErrorFilterSubject) return false;
         
+        if (currentErrorFilterStatus === 'new' && err.status !== 'new') return false;
+        if (currentErrorFilterStatus === 'reviewed' && err.status !== 'reviewed') return false;
+        if (currentErrorFilterStatus === 'mastered' && err.status !== 'mastered') return false;
+        if (currentErrorFilterStatus === 'repeated' && err.repetitionCount === 0) return false;
+        if (currentErrorFilterStatus === 'needs_review' && !isErrorNeedsReview(err)) return false;
+
+        if (currentErrorSearch) {
+            const searchLower = currentErrorSearch.toLowerCase();
+            const textMatch = err.text.toLowerCase().includes(searchLower);
+            const lessonMatch = err.lessonLearned.toLowerCase().includes(searchLower);
+            if (!textMatch && !lessonMatch) return false;
+        }
+
+        return true;
+    });
+
+    // Sort: Needs review first, then newest
+    filtered.sort((a, b) => {
+        const aNeeds = isErrorNeedsReview(a);
+        const bNeeds = isErrorNeedsReview(b);
+        if (aNeeds && !bNeeds) return -1;
+        if (!aNeeds && bNeeds) return 1;
+        return b.id - a.id;
+    });
+
+    const listContainer = document.getElementById('error-list-container');
+    const emptyState = document.getElementById('error-empty-state');
+    const noResults = document.getElementById('error-no-results');
+    const loadMoreBtn = document.getElementById('error-load-more');
+
+    if (!listContainer) return;
+
+    if (state.errorBank.errors.length === 0) {
+        listContainer.innerHTML = '';
+        if (emptyState) { emptyState.classList.remove('hidden'); emptyState.classList.add('block'); }
+        if (noResults) { noResults.classList.add('hidden'); noResults.classList.remove('block'); }
+        if (loadMoreBtn) { loadMoreBtn.classList.add('hidden'); loadMoreBtn.classList.remove('inline-block'); }
+        return;
+    } else {
+        if (emptyState) { emptyState.classList.add('hidden'); emptyState.classList.remove('block'); }
+    }
+
+    if (filtered.length === 0) {
+        listContainer.innerHTML = '';
+        if (noResults) { noResults.classList.remove('hidden'); noResults.classList.add('block'); }
+        if (loadMoreBtn) { loadMoreBtn.classList.add('hidden'); loadMoreBtn.classList.remove('inline-block'); }
+        return;
+    } else {
+        if (noResults) { noResults.classList.add('hidden'); noResults.classList.remove('block'); }
+    }
+
+    const toRender = filtered.slice(0, errorRenderLimit);
+    
+    listContainer.innerHTML = toRender.map(err => {
+        let statusBadge = '';
+        if (err.status === 'new') statusBadge = '<span class="text-[10px] font-bold px-2 py-1 rounded-md border text-rose-400 border-rose-500/30 bg-rose-500/10">جديد</span>';
+        else if (err.status === 'reviewed') statusBadge = '<span class="text-[10px] font-bold px-2 py-1 rounded-md border text-blue-400 border-blue-500/30 bg-blue-500/10">مراجعة</span>';
+        else statusBadge = '<span class="text-[10px] font-bold px-2 py-1 rounded-md border text-emerald-400 border-emerald-500/30 bg-emerald-500/10">مُتقن</span>';
+
         return `
-        <div onclick="toggleWeakness(${w.id})" class="glass-panel rounded-2xl p-4 min-h-[44px] border transition-all cursor-pointer btn-press ${w.solved ? 'border-emerald-500/40 bg-emerald-500/5 opacity-60' : 'border-white/10 hover:bg-white/[0.02]'}">
+        <div onclick="openErrorDetail(${err.id})" class="error-card-compact glass-panel rounded-2xl p-4 min-h-[44px] border border-white/10 hover:bg-white/[0.02] transition-all cursor-pointer btn-press error-severity-${err.severity}">
             <div class="flex justify-between items-start mb-2">
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full ${w.solved ? 'bg-emerald-500' : w.priority === 'high' ? 'bg-red-500 animate-pulse' : w.priority === 'medium' ? 'bg-rose-500' : 'bg-emerald-500'}"></div>
-                    <h4 class="text-base font-black text-white ${w.solved ? 'line-through opacity-50' : ''}">${escapeHTML(w.subject)}</h4>
+                <div class="flex items-center gap-2 flex-1 min-w-0 pr-2">
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-md bg-white/10 text-white/70 shrink-0">${escapeHTML(err.subjectName)}</span>
+                    <h4 class="text-sm font-bold text-white line-clamp-1">${escapeHTML(err.text)}</h4>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-bold px-3 py-1 rounded-full border ${prioColor}">${prioLabel}</span>
-                    <button onclick="deleteWeakness(${w.id}, event)" aria-label="حذف الثغرة" class="w-11 h-11 flex items-center justify-center hover:bg-red-500/10 text-white/10 hover:text-red-400 rounded-lg transition-colors">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
+                <div class="shrink-0 ml-2">
+                    ${statusBadge}
                 </div>
             </div>
-            <p class="text-sm text-white/60 mb-3 leading-relaxed ${w.solved ? 'line-through opacity-40' : ''}">${escapeHTML(w.desc)}</p>
-            <div class="flex justify-between items-center">
-                <span class="text-[11px] text-white/30 font-bold">${w.date}</span>
-                <div class="flex items-center gap-1">
-                    ${w.solved ? 
-                        '<span class="text-[11px] font-black text-emerald-400 flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> تم التغلب عليها</span>' : 
-                        '<span class="text-[11px] font-black text-rose-400/70">اضغط عند الحل لربح +100 XP</span>'
-                    }
-                </div>
+            <div class="flex justify-between items-center mt-3">
+                <span class="text-[10px] text-white/40">${err.dateAdded}</span>
+                ${err.repetitionCount > 0 ? `<span class="text-[10px] font-bold text-orange-400 flex items-center gap-1"><i data-lucide="rotate-cw" class="w-3 h-3"></i> تكرر ${err.repetitionCount}</span>` : ''}
             </div>
         </div>`;
     }).join('');
-    lucide.createIcons({ root: container });
+
+    lucide.createIcons({ root: listContainer });
+
+    if (loadMoreBtn) {
+        if (filtered.length > errorRenderLimit) {
+            loadMoreBtn.classList.remove('hidden');
+            loadMoreBtn.classList.add('inline-block');
+        } else {
+            loadMoreBtn.classList.add('hidden');
+            loadMoreBtn.classList.remove('inline-block');
+        }
+    }
+}
+
+function calculateErrorAnalytics() {
+    const errors = state.errorBank.errors;
+    const total = errors.length;
+    
+    let mastered = 0;
+    let reviewed = 0;
+    let newCount = 0;
+    let repeated = 0;
+    let needsReview = 0;
+    
+    let typeDist = { 'conceptual': 0, 'calculation': 0, 'careless': 0, 'other': 0 };
+    let subjectDist = {};
+
+    errors.forEach(err => {
+        if (err.status === 'mastered') mastered++;
+        else if (err.status === 'reviewed') reviewed++;
+        else newCount++;
+
+        if (err.repetitionCount > 0) repeated++;
+        if (isErrorNeedsReview(err)) needsReview++;
+
+        if (typeDist[err.type] !== undefined) typeDist[err.type]++;
+        else typeDist['other']++;
+
+        subjectDist[err.subjectName] = (subjectDist[err.subjectName] || 0) + 1;
+    });
+
+    const masteryPercentage = total > 0 ? Math.round((mastered / total) * 100) : 0;
+
+    let sortedSubjects = Object.keys(subjectDist).map(name => ({
+        name,
+        count: subjectDist[name],
+        percent: Math.round((subjectDist[name] / total) * 100)
+    })).sort((a, b) => b.count - a.count);
+
+    return {
+        total, mastered, reviewed, newCount, repeated, needsReview, masteryPercentage,
+        typeDist, subjectDist: sortedSubjects
+    };
+}
+
+function renderErrorAnalytics() {
+    const stats = calculateErrorAnalytics();
+
+    const setTxt = (id, txt) => { const el = document.getElementById(id); if(el) el.innerText = txt; };
+    
+    setTxt('stat-errors-total', stats.total);
+    setTxt('stat-errors-review', stats.needsReview);
+    setTxt('stat-errors-repeated', stats.repeated);
+    setTxt('stat-errors-mastered', stats.mastered);
+    setTxt('stat-errors-mastery', `(${stats.masteryPercentage}%)`);
+
+    const typeDistContainer = document.getElementById('stat-errors-type-distribution');
+    if (typeDistContainer) {
+        if (stats.total === 0) {
+            typeDistContainer.innerHTML = `<p class="text-xs text-white/40 text-center py-2">لا توجد بيانات</p>`;
+        } else {
+            const types = [
+                { key: 'conceptual', label: 'مفاهيمي', color: 'bg-purple-500' },
+                { key: 'calculation', label: 'حسابي', color: 'bg-blue-500' },
+                { key: 'careless', label: 'قلة تركيز', color: 'bg-orange-500' },
+                { key: 'other', label: 'أخرى', color: 'bg-slate-500' }
+            ];
+            typeDistContainer.innerHTML = types.map(t => {
+                const count = stats.typeDist[t.key];
+                const percent = Math.round((count / stats.total) * 100);
+                if (count === 0) return '';
+                return `
+                <div class="mb-2">
+                    <div class="flex justify-between text-[10px] font-bold mb-1 text-white/70">
+                        <span>${t.label}</span>
+                        <span>${percent}%</span>
+                    </div>
+                    <div class="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-white/5">
+                        <div class="h-full ${t.color} stat-bar-fill" style="width: ${percent}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    const subDistContainer = document.getElementById('stat-errors-subject-distribution');
+    if (subDistContainer) {
+        if (stats.subjectDist.length === 0) {
+            subDistContainer.innerHTML = `<p class="text-xs text-white/40 text-center py-2">لا توجد بيانات</p>`;
+        } else {
+            const topSubjects = stats.subjectDist.slice(0, 4);
+            subDistContainer.innerHTML = topSubjects.map((s, i) => {
+                const colors = ['bg-rose-500', 'bg-pink-500', 'bg-fuchsia-500', 'bg-purple-500'];
+                return `
+                <div class="mb-2">
+                    <div class="flex justify-between text-[10px] font-bold mb-1 text-white/70">
+                        <span class="truncate pr-2">${escapeHTML(s.name)}</span>
+                        <span>${s.percent}%</span>
+                    </div>
+                    <div class="w-full bg-black/40 h-1.5 rounded-full overflow-hidden border border-white/5">
+                        <div class="h-full ${colors[i%colors.length]} stat-bar-fill" style="width: ${s.percent}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    const insightsContainer = document.getElementById('stat-errors-insights');
+    if (insightsContainer) {
+        let insightsHtml = '';
+        if (stats.total === 0) {
+            insightsHtml = `<p class="text-xs text-white/50">ابدأ بتسجيل أخطائك للحصول على تحليلات ذكية.</p>`;
+        } else {
+            if (stats.needsReview > 0) {
+                insightsHtml += `<p class="text-xs text-white/80 mb-2"><span class="text-rose-400 font-bold">•</span> لديك ${stats.needsReview} أخطاء تحتاج إلى مراجعة لتثبيت المعلومة.</p>`;
+            }
+            if (stats.masteryPercentage >= 50) {
+                insightsHtml += `<p class="text-xs text-white/80 mb-2"><span class="text-emerald-400 font-bold">•</span> أداء ممتاز! لقد أتقنت ${stats.masteryPercentage}% من الأخطاء المسجلة.</p>`;
+            }
+            if (stats.repeated > 0) {
+                insightsHtml += `<p class="text-xs text-white/80 mb-2"><span class="text-orange-400 font-bold">•</span> يوجد ${stats.repeated} أخطاء متكررة. حاول التركيز على أسبابها الجذرية.</p>`;
+            }
+            
+            let maxType = 'other';
+            let maxCount = 0;
+            for (const [key, val] of Object.entries(stats.typeDist)) {
+                if (val > maxCount && key !== 'other') { maxCount = val; maxType = key; }
+            }
+            if (maxCount > 0 && (maxCount / stats.total) > 0.4) {
+                const typeMap = { 'conceptual': 'المفاهيمية', 'calculation': 'الحسابية', 'careless': 'قلة التركيز' };
+                insightsHtml += `<p class="text-xs text-white/80 mb-2"><span class="text-blue-400 font-bold">•</span> نسبة كبيرة من أخطائك تعود إلى الأخطاء ${typeMap[maxType]}.</p>`;
+            }
+            
+            if (!insightsHtml) {
+                insightsHtml = `<p class="text-xs text-white/50">استمر في تسجيل ومراجعة الأخطاء لبناء قاعدة بيانات قوية.</p>`;
+            }
+        }
+        insightsContainer.innerHTML = insightsHtml;
+    }
 }
 
 window.onload = () => {
@@ -3123,6 +3878,7 @@ window.onload = () => {
     updateGlobalUI(); 
     updateQuote();
     initStoreBoostInterval();
+    initErrorBank();
     
     if (Object.values(state.productivity).reduce((a, b) => a + b, 0) === 0) {
         const today = new Date().getDay();
