@@ -2,6 +2,8 @@ if (typeof window.lucide === 'undefined') {
     window.lucide = { createIcons: function(options) { console.warn('Lucide icons not loaded. Check connection or CDN.'); } };
 }
 
+const CURRENT_STATE_VERSION = 1;
+
 const CATEGORIES = {
     study: { label: 'مذاكرة', color: 'bg-purple-400', colorCode: '#c084fc', bgCheck: 'bg-purple-500', textCheck: 'text-purple-400' },
     solve: { label: 'حل وتدريب', color: 'bg-blue-400', colorCode: '#60a5fa', bgCheck: 'bg-blue-500', textCheck: 'text-blue-400' },
@@ -46,36 +48,23 @@ function getNextPaymentDate(dateString) {
 }
 
 const STORE_CATALOG = [
-    // Boosts
     { id: 'boost_xp_1', title: 'مضاعف الخبرة (ساعة)', desc: 'يضاعف نقاط الخبرة المكتسبة 1.5x لمدة ساعة.', cost: 150, category: 'boosts', icon: 'zap', rarity: 'rare', type: 'boost', boostType: 'xp', multiplier: 1.5, duration: 60 * 60 * 1000 },
     { id: 'boost_coin_1', title: 'مضاعف الذهب (ساعة)', desc: 'يضاعف العملات المكتسبة 1.5x لمدة ساعة.', cost: 150, category: 'boosts', icon: 'coins', rarity: 'rare', type: 'boost', boostType: 'coin', multiplier: 1.5, duration: 60 * 60 * 1000 },
     { id: 'boost_xp_2', title: 'إكسير الخبرة الأسطوري', desc: 'يضاعف نقاط الخبرة 2x لمدة 3 ساعات.', cost: 400, category: 'boosts', icon: 'flask-conical', rarity: 'epic', type: 'boost', boostType: 'xp', multiplier: 2, duration: 3 * 60 * 60 * 1000 },
-    
-    // Themes
     { id: 'theme_crimson', title: 'طاقة القرمزي', desc: 'مظهر أحمر ناري يعكس الحماس والطاقة.', cost: 500, category: 'themes', icon: 'palette', rarity: 'epic', type: 'theme' },
     { id: 'theme_emerald', title: 'هالة الزمرد', desc: 'مظهر أخضر هادئ يساعد على التركيز.', cost: 500, category: 'themes', icon: 'palette', rarity: 'epic', type: 'theme' },
     { id: 'theme_cyber', title: 'سايبر نيون', desc: 'مظهر مستقبلي عالي التباين.', cost: 800, category: 'themes', icon: 'palette', rarity: 'legendary', type: 'theme' },
     { id: 'theme_gold', title: 'بريق الذهب', desc: 'مظهر ذهبي ملكي للأساطير فقط.', cost: 1000, category: 'themes', icon: 'palette', rarity: 'legendary', type: 'theme' },
-
-    // Effects
     { id: 'effect_task_1', title: 'نبضة الإنجاز', desc: 'تأثير بصري عند إكمال المهام.', cost: 300, category: 'effects', icon: 'sparkles', rarity: 'rare', type: 'effect', effectEvent: 'task-complete' },
     { id: 'effect_focus_1', title: 'توهج التركيز', desc: 'توهج ذهبي عند إنهاء جلسة تركيز.', cost: 500, category: 'effects', icon: 'flame', rarity: 'epic', type: 'effect', effectEvent: 'focus-complete' },
     { id: 'effect_achieve_1', title: 'احتفال الأساطير', desc: 'تأثير خاص عند فتح إنجاز جديد.', cost: 600, category: 'effects', icon: 'party-popper', rarity: 'legendary', type: 'effect', effectEvent: 'achievement-unlock' },
     { id: 'effect_streak_1', title: 'شعلة الاستمرارية', desc: 'تأثير ناري عند زيادة أيام الاستمرارية.', cost: 400, category: 'effects', icon: 'flame', rarity: 'epic', type: 'effect', effectEvent: 'streak' },
-
-    // Titles
     { id: 'title_1', title: 'لقب: المثابر', desc: 'لقب يظهر بجانب اسمك.', cost: 300, category: 'titles', icon: 'award', rarity: 'rare', type: 'title', label: 'المثابر' },
     { id: 'title_2', title: 'لقب: سيد التركيز', desc: 'لقب يظهر بجانب اسمك.', cost: 600, category: 'titles', icon: 'award', rarity: 'epic', type: 'title', label: 'سيد التركيز' },
     { id: 'title_3', title: 'لقب: الأسطورة', desc: 'اللقب الأعظم على الإطلاق.', cost: 1500, category: 'titles', icon: 'crown', rarity: 'legendary', type: 'title', label: 'الأسطورة' },
-
-    // Avatars
     { id: 'avatar_premium_1', title: 'أفاتار: فارس الظلام', desc: 'شخصية حصرية لا تفتح إلا بالذهب.', cost: 1200, category: 'avatars', icon: 'user-circle', rarity: 'legendary', type: 'avatar', avatarId: 9 },
-
-    // Mystery
     { id: 'mystery_small', title: 'صندوق الغموض الصغير', desc: 'قد يحتوي على ذهب، خبرة، أو معززات.', cost: 200, category: 'mystery', icon: 'box', rarity: 'rare', type: 'mystery', pool: 'small' },
     { id: 'mystery_epic', title: 'صندوق الأساطير', desc: 'مكافآت ضخمة وفرصة لربح ألقاب حصرية.', cost: 800, category: 'mystery', icon: 'gift', rarity: 'legendary', type: 'mystery', pool: 'epic' },
-
-    // Power-ups (Instant Consumables)
     { id: 'power_xp_1', title: 'جرعة الحكمة', desc: 'تمنحك 200 XP فوراً.', cost: 250, category: 'powerups', icon: 'flask-round', rarity: 'common', type: 'instant', grantXp: 200 },
     { id: 'power_focus_1', title: 'لفيفة الزمن', desc: 'تضيف 60 دقيقة لسجل تركيزك.', cost: 400, category: 'powerups', icon: 'scroll', rarity: 'rare', type: 'instant', grantFocus: 60 },
     { id: 'power_streak_1', title: 'درع الاستمرارية', desc: 'يحميك من فقدان السلسلة (يضيف 3 أيام).', cost: 600, category: 'powerups', icon: 'shield', rarity: 'epic', type: 'instant', grantStreak: 3 }
@@ -106,7 +95,7 @@ const ACHIEVEMENTS_TEMPLATES = [
 const AVATARS_DATA = [
     { id: 1, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#3b82f6"/><circle cx="50" cy="65" r="28" fill="#fed7aa"/><path d="M22 65 Q50 20 78 65 Z" fill="#1f2937"/><rect x="25" y="50" width="50" height="18" rx="4" fill="#111827" opacity="0.9"/><rect x="25" y="50" width="50" height="4" fill="#374151"/></svg>` },
     { id: 2, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#ec4899"/><path d="M20 90 C20 40 80 40 80 90 Z" fill="#4b5563"/><circle cx="50" cy="65" r="26" fill="#ffedd5"/><circle cx="37" cy="58" r="12" fill="#111827"/><circle cx="63" cy="58" r="12" fill="#111827"/><path d="M49 58 L51 58" stroke="#111827" stroke-width="4"/></svg>` },
-    { id: 3, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#f59e0b"/><circle cx="50" cy="65" r="28" fill="#fcd34d"/><path d="M20 50 Q50 30 80 50 C80 20 20 20 20 50 Z" fill="#78350f"/><path d="M22 55 L78 55 L72 70 L28 70 Z" fill="#000" opacity="0.8"/></svg>` },
+    { id: 3, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#f59e0b"/><circle cx="50" cy="65" r="28" fill="#fcd34d"/><path d="M20 50 Q50 30 80 50 C80 20 20 20 50 Z" fill="#78350f"/><path d="M22 55 L78 55 L72 70 L28 70 Z" fill="#000" opacity="0.8"/></svg>` },
     { id: 4, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#10b981"/><circle cx="50" cy="65" r="26" fill="#fecaca"/><path d="M30 30 C 10 10, 50 10, 50 30 C 50 10, 90 10, 70 30 C 90 70, 70 90, 50 60 C 30 90, 10 70, 30 30 Z" fill="#9d174d"/><rect x="28" y="52" width="20" height="14" fill="#111827"/><rect x="52" y="52" width="20" height="14" fill="#111827"/><path d="M48 56 L52 56" stroke="#111827" stroke-width="3"/></svg>` },
     { id: 5, reqLvl: 5, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#0f172a"/><circle cx="50" cy="65" r="28" fill="#e2e8f0"/><path d="M15 50 L30 10 L40 30 L50 5 L60 30 L70 10 L85 50 Z" fill="#38bdf8"/><rect x="20" y="52" width="60" height="12" rx="6" fill="#000"/><rect x="24" y="55" width="52" height="6" rx="3" fill="#06b6d4"/><circle cx="85" cy="58" r="3" fill="#38bdf8"/></svg>` },
     { id: 6, reqLvl: 5, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#4c1d95"/><circle cx="50" cy="65" r="26" fill="#f3e8ff"/><circle cx="25" cy="35" r="15" fill="#d946ef"/><circle cx="75" cy="35" r="15" fill="#d946ef"/><path d="M35 30 Q50 20 65 30 Z" fill="#d946ef"/><path d="M25 65 L45 50 L50 55 L55 50 L75 65 L60 70 L40 70 Z" fill="#000"/><path d="M30 63 L43 54 M70 63 L57 54" stroke="#f0abfc" stroke-width="3"/></svg>` },
@@ -130,6 +119,7 @@ const RANDOM_EVENTS_DATA = [
 ];
 
 const INITIAL_STATE = {
+    version: CURRENT_STATE_VERSION,
     userName: 'اسمك هنا',
     avatarId: 1,
     lastActionDate: null,
@@ -158,7 +148,7 @@ const INITIAL_STATE = {
     weeklyStats: { tasks: 0, xp: 0, focus: 0 },
     weeklyReports: [],
     examSubjects: [],
-    weaknesses: [], // Preserved for backward compatibility
+    weaknesses: [],
     errorBank: {
         errors: [],
         lastSmartReviewDate: null
@@ -183,19 +173,29 @@ let stopwatchInterval = null;
 let currentStoreCategory = 'all';
 let storeBoostInterval = null;
 
-// Error Bank V2 Variables
 let currentErrorFilterSubject = 'all';
 let currentErrorFilterStatus = 'all';
 let currentErrorSearch = '';
 let errorRenderLimit = 20;
 let currentActiveErrorId = null;
 
+function runMigrations(loadedState) {
+    let s = loadedState;
+    if (typeof s.version !== 'number') s.version = 0;
+    if (s.version < 1) {
+        s.version = 1;
+    }
+    return s;
+}
+
+let rawSavedState = null;
 try {
-    const savedState = localStorage.getItem('hsQuestPremium_v4');
-    if (savedState) {
-        const parsed = JSON.parse(savedState);
+    rawSavedState = localStorage.getItem('hsQuestPremium_v4');
+    if (rawSavedState) {
+        const parsed = JSON.parse(rawSavedState);
         if (typeof parsed === 'object' && parsed !== null) {
-            state = { ...state, ...parsed };
+            const migratedState = runMigrations(parsed);
+            state = { ...state, ...migratedState };
         }
         
         const arrayKeys = ['tasks', 'inventory', 'goals', 'lessons', 'studyPlan', 'unlockedAchievements', 'habits', 'weeklyReports', 'examSubjects', 'weaknesses', 'studySubjects', 'rewards'];
@@ -232,7 +232,6 @@ try {
             state.errorBank = { errors: [], lastSmartReviewDate: null };
         }
 
-        // Idempotent Legacy Migration: Weaknesses -> Error Bank V2
         if (state.weaknesses && state.weaknesses.length > 0) {
             state.weaknesses.forEach(w => {
                 const exists = state.errorBank.errors.find(e => e.id === w.id);
@@ -271,10 +270,26 @@ try {
             if(!Array.isArray(s.history)) s.history = [];
             if(typeof s.weeklyGoal !== 'number' || !isFinite(s.weeklyGoal)) s.weeklyGoal = 0;
         });
+        
+        state.version = CURRENT_STATE_VERSION;
     }
 } catch(e) {
-    console.error("State parsing failed, falling back to initial state to prevent crash.", e);
+    console.error("State parsing failed, attempting recovery.", e);
+    let recoverySaved = false;
+    if (rawSavedState) {
+        try {
+            const timestamp = Date.now();
+            localStorage.setItem(`hsQuestPremium_v4_corrupted_${timestamp}`, rawSavedState);
+            console.warn(`Corrupted state saved to hsQuestPremium_v4_corrupted_${timestamp}`);
+            recoverySaved = true;
+        } catch(recoveryErr) {
+            console.error("Failed to save corrupted state.", recoveryErr);
+            recoverySaved = false;
+        }
+    }
     state = JSON.parse(JSON.stringify(INITIAL_STATE));
+    state._needsCorruptionNotice = true;
+    state._recoverySaved = recoverySaved;
 }
 
 let isStorageWarningActive = false;
@@ -322,7 +337,20 @@ function showStorageError() {
 
 function exportData() {
     try {
-        const dataStr = JSON.stringify(state);
+        const stateToExport = { ...state };
+        delete stateToExport._needsCorruptionNotice;
+        delete stateToExport._recoverySaved;
+        
+        const exportPayload = {
+            rodo_metadata: {
+                exportDate: new Date().toISOString(),
+                appVersion: "2.0.0",
+                appId: "RODO"
+            },
+            rodo_state: stateToExport
+        };
+        
+        const dataStr = JSON.stringify(exportPayload);
         const dataBlob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(dataBlob);
         const a = document.createElement('a');
@@ -337,6 +365,102 @@ function exportData() {
     } catch (e) {
         console.error("Export failed", e);
         showToast('حدث خطأ أثناء تصدير البيانات.', 'info');
+    }
+}
+
+function triggerImport() {
+    const input = document.getElementById('import-file-input');
+    if (input) input.click();
+}
+
+function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const json = JSON.parse(e.target.result);
+            validateAndApplyImport(json);
+        } catch (err) {
+            console.error("Import parse error:", err);
+            showToast('ملف غير صالح أو تالف. يرجى التأكد من اختيار ملف RODO صحيح.', 'info');
+        }
+        event.target.value = '';
+    };
+    reader.onerror = () => {
+        showToast('حدث خطأ أثناء قراءة الملف.', 'info');
+        event.target.value = '';
+    };
+    reader.readAsText(file);
+}
+
+function validateAndApplyImport(json) {
+    if (!json || typeof json !== 'object') {
+        showToast('تنسيق الملف غير مدعوم.', 'info');
+        return;
+    }
+    
+    if (!json.rodo_metadata || json.rodo_metadata.appId !== "RODO" || !json.rodo_state || typeof json.rodo_state.version !== 'number') {
+        showToast('هذا الملف ليس ملف نسخ احتياطي صالح لـ RODO.', 'info');
+        return;
+    }
+    
+    let candidateState = json.rodo_state;
+    
+    const requiredArrays = ['tasks', 'habits', 'goals', 'lessons', 'studyPlan', 'examSubjects', 'studySubjects', 'weaknesses'];
+    for (const key of requiredArrays) {
+        if (candidateState[key] !== undefined && !Array.isArray(candidateState[key])) {
+            showToast(`بيانات الملف تالفة: ${key} ليس قائمة صحيحة.`, 'info');
+            return;
+        }
+    }
+    
+    if (candidateState.errorBank && (!Array.isArray(candidateState.errorBank.errors))) {
+        showToast(`بيانات الملف تالفة: بنك الأخطاء غير صالح.`, 'info');
+        return;
+    }
+
+    if (candidateState.store && (!Array.isArray(candidateState.store.ownedItems))) {
+        showToast(`بيانات الملف تالفة: المتجر غير صالح.`, 'info');
+        return;
+    }
+
+    if (candidateState.xp !== undefined && typeof candidateState.xp !== 'number') {
+        showToast(`بيانات الملف تالفة: قيمة الخبرة غير صالحة.`, 'info');
+        return;
+    }
+    if (candidateState.coins !== undefined && typeof candidateState.coins !== 'number') {
+        showToast(`بيانات الملف تالفة: قيمة الذهب غير صالحة.`, 'info');
+        return;
+    }
+    
+    candidateState = runMigrations(candidateState);
+    
+    if (confirm('هل أنت متأكد من استعادة هذه البيانات؟ سيتم مسح بياناتك الحالية بالكامل وإحلال البيانات الجديدة.')) {
+        state = { ...JSON.parse(JSON.stringify(INITIAL_STATE)), ...candidateState };
+        state.version = CURRENT_STATE_VERSION;
+        
+        if (stopwatchInterval) {
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+        }
+        pendingRandomEvent = null;
+        stateSnapshot = null;
+        
+        saveState();
+        
+        applyTheme();
+        updateGlobalUI();
+        renderTasks(); renderGoals(); renderStore();
+        renderStats(); renderJourney(); renderProfile(); renderSchedule(); renderHabits();
+        renderWeeklyHistory(); renderHeatmap(); renderErrorBank();
+        updateStopwatchUI(true);
+        renderStudyTimeTable();
+        renderRecentSessions();
+        
+        showToast('تمت استعادة البيانات بنجاح! أهلاً بعودتك.', 'success');
+        switchTab('dashboard');
     }
 }
 
@@ -1291,10 +1415,9 @@ function requestReset() {
             btn.innerText = "إعادة تهيئة البيانات (Reset)";
         }, 3000);
     } else {
-        // 1. Destructive State Wipe
         state = JSON.parse(JSON.stringify(INITIAL_STATE)); 
+        state.version = CURRENT_STATE_VERSION;
         
-        // 2. Clear Runtime State
         if (stopwatchInterval) {
             clearInterval(stopwatchInterval);
             stopwatchInterval = null;
@@ -1302,10 +1425,8 @@ function requestReset() {
         pendingRandomEvent = null;
         stateSnapshot = null;
 
-        // 3. Save pristine state (automatically triggers updateGlobalUI)
         saveState();
 
-        // 4. Reset Theme & Global Components
         applyTheme();
         updateStopwatchUI(true);
         renderHeatmap();
@@ -1313,12 +1434,10 @@ function requestReset() {
         renderRecentSessions();
         renderErrorBank();
 
-        // 5. Reset Button UI
         resetClickCount = 0;
         btn.className = "w-full py-3 min-h-[44px] bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-sm font-bold btn-press transition-all";
         btn.innerText = "إعادة تهيئة البيانات (Reset)";
         
-        // 6. Redirect and Notify (Irreversible)
         switchTab('dashboard'); 
         showToast('تم مسح جميع البيانات والعودة لنقطة الصفر.', 'info');
     }
@@ -2217,6 +2336,96 @@ function renderStore() {
     lucide.createIcons();
 }
 
+const IntelligenceEngine = {
+    getNeglectWarnings: function() {
+        const warnings = [];
+        const now = Date.now();
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        state.studySubjects.forEach(sub => {
+            if (sub.history && sub.history.length > 0) {
+                const lastSession = sub.history[sub.history.length - 1];
+                const lastTime = Number(lastSession.timestamp) || new Date(lastSession.date).getTime();
+                if (now - lastTime > sevenDays) {
+                    warnings.push({ icon: 'alert-triangle', text: `مادة "${sub.name}" لم تُدرس منذ أكثر من أسبوع. لا تدعها تتراكم!`, color: 'text-orange-400' });
+                }
+            }
+        });
+        return warnings;
+    },
+    getGoalIntelligence: function() {
+        const insights = [];
+        state.studySubjects.forEach(sub => {
+            if (sub.weeklyGoal > 0) {
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                const weeklyMins = sub.history?.filter(h => new Date(h.date) >= sevenDaysAgo).reduce((acc, curr) => acc + curr.minutes, 0) || 0;
+                const percent = Math.round((weeklyMins / sub.weeklyGoal) * 100);
+                if (percent >= 100) {
+                    insights.push({ icon: 'check-circle', text: `أنجزت هدفك الأسبوعي في "${sub.name}" (${percent}%). عمل رائع!`, color: 'text-emerald-400' });
+                } else if (percent >= 80) {
+                    insights.push({ icon: 'trending-up', text: `أنت قريب جداً من هدفك الأسبوعي في "${sub.name}" (${percent}%). واصل!`, color: 'text-blue-400' });
+                }
+            }
+        });
+        return insights;
+    },
+    getStudyRhythm: function(timePeriods) {
+        const insights = [];
+        if (!timePeriods) return insights;
+        let maxTimeMins = 0;
+        let bestTime = null;
+        for (let p in timePeriods) {
+            if (timePeriods[p] > maxTimeMins) {
+                maxTimeMins = timePeriods[p];
+                bestTime = p;
+            }
+        }
+        if (bestTime && maxTimeMins > 120) {
+            insights.push({ icon: 'sun', text: `يبدو أن ذروة نشاطك في فترة ${bestTime}. استغل هذا الوقت للمهام الصعبة.`, color: 'text-yellow-400' });
+        }
+        return insights;
+    },
+    getErrorIntelligence: function() {
+        const insights = [];
+        const errors = state.errorBank.errors;
+        if (errors.length === 0) return insights;
+        
+        const repeated = errors.filter(e => e.repetitionCount > 0);
+        if (repeated.length > 3) {
+            insights.push({ icon: 'repeat', text: `لديك ${repeated.length} أخطاء متكررة. خصص جلسة لمراجعة بنك الأخطاء قريباً.`, color: 'text-rose-400' });
+        }
+        
+        const mastered = errors.filter(e => e.status === 'mastered');
+        if (mastered.length > 0 && mastered.length === errors.length) {
+            insights.push({ icon: 'award', text: `لقد أتقنت جميع أخطائك المسجلة! مستوى أسطوري.`, color: 'text-yellow-400' });
+        }
+        return insights;
+    },
+    getExamTrends: function() {
+        const insights = [];
+        state.examSubjects.forEach(sub => {
+            if (sub.exams && sub.exams.length >= 2) {
+                const sorted = [...sub.exams].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const last = sorted[sorted.length - 1];
+                const prev = sorted[sorted.length - 2];
+                if (last.percentage > prev.percentage + 5) {
+                    insights.push({ icon: 'trending-up', text: `مستواك في "${sub.name}" في تصاعد! استمر على هذا النحو.`, color: 'text-emerald-400' });
+                } else if (last.percentage < prev.percentage - 10) {
+                    insights.push({ icon: 'trending-down', text: `هناك تراجع في درجات "${sub.name}". راجع أخطاءك الأخيرة.`, color: 'text-rose-400' });
+                }
+            }
+        });
+        return insights;
+    },
+    getComebackIntelligence: function() {
+        const insights = [];
+        if (state.streak === 1 && state.bestStreak > 5) {
+            insights.push({ icon: 'shield', text: `عودة حميدة! لقد بدأت سلسلة جديدة. لا تستسلم، يمكنك تجاوز رقمك القياسي (${state.bestStreak}).`, color: 'text-blue-400' });
+        }
+        return insights;
+    }
+};
+
 function calculateAdvancedStats() {
     const now = new Date();
     const todayStr = getLocalDateStr(now);
@@ -2323,7 +2532,8 @@ function calculateAdvancedStats() {
         todaySessions, weeklySessions, monthlySessions, avgDuration,
         longestSession, mostSessionsDay, longestDayMins, bestTime,
         distribution, score, compareText, compareTrend,
-        totalSessions: allSessions.length
+        totalSessions: allSessions.length,
+        timePeriods
     };
 }
 
@@ -2357,11 +2567,22 @@ function generateSmartInsights(stats) {
         insights.push({ icon: 'flame', text: `أنت ذاكرت ${stats.weeklySessions} جلسات هذا الأسبوع. استمرارية ممتازة!`, color: 'text-orange-400' });
     }
 
+    const l4Neglect = IntelligenceEngine.getNeglectWarnings();
+    const l4Goals = IntelligenceEngine.getGoalIntelligence();
+    const l4Rhythm = IntelligenceEngine.getStudyRhythm(stats.timePeriods);
+    const l4Errors = IntelligenceEngine.getErrorIntelligence();
+    const l4Exams = IntelligenceEngine.getExamTrends();
+    const l4Comeback = IntelligenceEngine.getComebackIntelligence();
+
+    const allL4 = [...l4Comeback, ...l4Goals, ...l4Neglect, ...l4Rhythm, ...l4Errors, ...l4Exams];
+    
+    insights = [...insights, ...allL4];
+
     if (insights.length === 0) {
-        insights.push({ icon: 'activity', text: 'أنت تسير بخطى ثابتة. استمر في تسجيل جلساتك لمزيد من التحليلات الدقيقة.', color: 'text-emerald-400' });
+        insights.push({ icon: 'activity', text: 'أنت تسير بخطى ثابتة. استمر في تسجيل جلسات لمزيد من التحليلات الدقيقة.', color: 'text-emerald-400' });
     }
 
-    return insights.slice(0, 3);
+    return insights.slice(0, 4);
 }
 
 function renderStats() {
@@ -3108,10 +3329,6 @@ function renderExams() {
     lucide.createIcons({ root: container });
 }
 
-// ==========================================================================
-// ERROR BANK V2 & ANALYTICS
-// ==========================================================================
-
 function initErrorBank() {
     const formAddError = document.getElementById('form-add-error');
     if (formAddError) formAddError.addEventListener('submit', addError);
@@ -3483,7 +3700,6 @@ function renderErrorBank() {
     const totalEl = document.getElementById('error-bank-total');
     if (totalEl) totalEl.innerText = state.errorBank.errors.length;
 
-    // Extract unique subjects
     const subjects = [...new Set(state.errorBank.errors.map(e => e.subjectName))].filter(Boolean);
     const subjectFiltersContainer = document.getElementById('error-subject-filters');
     if (subjectFiltersContainer) {
@@ -3495,7 +3711,6 @@ function renderErrorBank() {
         subjectFiltersContainer.innerHTML = pillsHtml;
     }
 
-    // Status Filters
     const statusFiltersContainer = document.getElementById('error-status-filters');
     if (statusFiltersContainer) {
         const statuses = [
@@ -3514,7 +3729,6 @@ function renderErrorBank() {
         statusFiltersContainer.innerHTML = statusHtml;
     }
 
-    // Filter Errors
     let filtered = state.errorBank.errors.filter(err => {
         if (currentErrorFilterSubject !== 'all' && err.subjectName !== currentErrorFilterSubject) return false;
         
@@ -3534,7 +3748,6 @@ function renderErrorBank() {
         return true;
     });
 
-    // Sort: Needs review first, then newest
     filtered.sort((a, b) => {
         const aNeeds = isErrorNeedsReview(a);
         const bNeeds = isErrorNeedsReview(b);
@@ -3906,6 +4119,17 @@ window.onload = () => {
     });
 
     setTimeout(() => {
+        if (state._needsCorruptionNotice) {
+            if (state._recoverySaved) {
+                showToast('تم اكتشاف تلف في البيانات السابقة. تم بدء ملف جديد لحمايتك، وتم حفظ نسخة من البيانات التالفة.', 'info');
+            } else {
+                showToast('تم اكتشاف تلف في البيانات السابقة. فشلت محاولة حفظ نسخة احتياطية محلياً بسبب امتلاء المساحة. تم بدء ملف جديد.', 'info');
+            }
+            delete state._needsCorruptionNotice;
+            delete state._recoverySaved;
+            saveState();
+        }
+
         const isPenaltyApplied = checkStreakAndPenaltyOnLoad();
 
         if (!isPenaltyApplied) {
