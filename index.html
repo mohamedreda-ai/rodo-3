@@ -612,7 +612,25 @@
                 <div id="ui-achievements-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full"></div>
             </div>
 
-            <div class="glass-panel rounded-2xl p-5 border border-red-500/20 bg-red-500/5 mt-8 w-full">
+            <!-- Data Management -->
+            <div class="glass-panel rounded-2xl p-5 border border-blue-500/20 bg-blue-500/5 mt-8 w-full">
+                <h3 class="text-blue-400 font-bold text-sm mb-2 flex items-center gap-2">
+                    <i data-lucide="database" class="w-5 h-5"></i> إدارة البيانات
+                </h3>
+                <p class="text-xs text-white/50 mb-4">حفظ نسخة احتياطية من بياناتك أو استعادتها لضمان عدم ضياع مجهودك.</p>
+                <div class="flex gap-3 w-full">
+                    <button onclick="exportData()" class="flex-1 py-3 min-h-[44px] bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-xl text-xs font-bold btn-press transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> تصدير (Backup)
+                    </button>
+                    <button onclick="triggerImport()" class="flex-1 py-3 min-h-[44px] bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 rounded-xl text-xs font-bold btn-press transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="upload" class="w-4 h-4"></i> استيراد
+                    </button>
+                    <input type="file" id="import-file-input" accept=".json" class="hidden" onchange="handleImportFile(event)">
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="glass-panel rounded-2xl p-5 border border-red-500/20 bg-red-500/5 mt-4 w-full">
                 <h3 class="text-red-400 font-bold text-sm mb-2 flex items-center gap-2">
                     <i data-lucide="alert-triangle" class="w-5 h-5"></i> منطقة الخطر
                 </h3>
