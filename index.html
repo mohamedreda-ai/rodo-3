@@ -325,46 +325,216 @@
 
             <!-- Category Navigation -->
             <div class="flex overflow-x-auto hide-scrollbar gap-2 pb-2 w-full" id="ui-store-categories">
-                <button class="store-category-btn active px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="all">
-                    <i data-lucide="layout-grid" class="w-4 h-4"></i> الكل
+                <button class="store-category-btn active px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="storefront">
+                    <i data-lucide="star" class="w-4 h-4"></i> الواجهة
                 </button>
-                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="themes">
-                    <i data-lucide="palette" class="w-4 h-4"></i> مظاهر
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="catalog">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i> الكتالوج
                 </button>
-                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="effects">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i> مؤثرات
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="rewards">
+                    <i data-lucide="gift" class="w-4 h-4"></i> المكافآت وصناديق الحظ
                 </button>
-                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="boosts">
-                    <i data-lucide="zap" class="w-4 h-4"></i> مُعززات
-                </button>
-                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="powerups">
-                    <i data-lucide="battery-charging" class="w-4 h-4"></i> قدرات
-                </button>
-                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="avatars">
-                    <i data-lucide="user-circle" class="w-4 h-4"></i> أفاتار
-                </button>
-                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="titles">
-                    <i data-lucide="award" class="w-4 h-4"></i> ألقاب
-                </button>
-                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="mystery">
-                    <i data-lucide="box" class="w-4 h-4"></i> صناديق
+                <button class="store-category-btn px-4 py-2 min-h-[44px] rounded-xl text-sm font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-2 shrink-0" data-category="inventory">
+                    <i data-lucide="backpack" class="w-4 h-4"></i> الخزانة
                 </button>
             </div>
 
-            <!-- Product Grid -->
-            <div id="ui-store-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                <!-- Products will be injected here by app.js -->
-            </div>
-            
-            <!-- Empty State for Grid (Hidden by default) -->
-            <div id="ui-store-grid-empty" class="hidden glass-panel rounded-2xl p-8 text-center opacity-70 border-dashed border-2 border-white/10 w-full mt-4">
-                <i data-lucide="search-x" class="w-10 h-10 text-white/30 mx-auto mb-3"></i>
-                <p class="text-sm text-white/70">لا توجد عناصر في هذا القسم حالياً.</p>
+            <!-- Storefront View (Default Active) -->
+            <div id="ui-store-front" class="w-full flex flex-col gap-6">
+                <!-- Featured Item Placeholder -->
+                <div id="ui-store-featured" class="w-full"></div>
+                
+                <!-- Daily Deals Placeholder -->
+                <div id="ui-store-daily-deals-container" class="w-full">
+                    <h3 class="text-sm font-bold text-white/70 flex items-center gap-2 px-2 mb-3">
+                        <i data-lucide="clock" class="w-4 h-4 text-blue-400"></i> عروض اليوم
+                    </h3>
+                    <div id="ui-store-daily-deals" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full"></div>
+                </div>
             </div>
 
-            <!-- Inventory Section -->
-            <div class="mt-10 w-full">
-                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+            <!-- Catalog View -->
+            <div id="ui-store-catalog" class="hidden w-full flex-col gap-4">
+                <!-- Catalog Sub-navigation -->
+                <div class="flex overflow-x-auto hide-scrollbar gap-2 pb-2 w-full" id="ui-catalog-subtabs">
+                    <button class="catalog-subtab-btn active px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all bg-blue-500/20 text-blue-400 border border-blue-500/30 whitespace-nowrap flex items-center gap-1.5 shrink-0" data-subtab="all" onclick="setCatalogSubtab('all')">
+                        <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i> الكل
+                    </button>
+                    <button class="catalog-subtab-btn px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-1.5 shrink-0" data-subtab="themes" onclick="setCatalogSubtab('themes')">
+                        <i data-lucide="palette" class="w-3.5 h-3.5"></i> مظاهر
+                    </button>
+                    <button class="catalog-subtab-btn px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-1.5 shrink-0" data-subtab="titles" onclick="setCatalogSubtab('titles')">
+                        <i data-lucide="award" class="w-3.5 h-3.5"></i> ألقاب
+                    </button>
+                    <button class="catalog-subtab-btn px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-1.5 shrink-0" data-subtab="effects" onclick="setCatalogSubtab('effects')">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> مؤثرات
+                    </button>
+                    <button class="catalog-subtab-btn px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-1.5 shrink-0" data-subtab="boosts" onclick="setCatalogSubtab('boosts')">
+                        <i data-lucide="zap" class="w-3.5 h-3.5"></i> معززات
+                    </button>
+                    <button class="catalog-subtab-btn px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-1.5 shrink-0" data-subtab="powerups" onclick="setCatalogSubtab('powerups')">
+                        <i data-lucide="battery-charging" class="w-3.5 h-3.5"></i> قدرات
+                    </button>
+                    <button class="catalog-subtab-btn px-3.5 py-2 min-h-[44px] rounded-xl text-xs font-bold transition-all bg-white/5 text-white/50 border border-white/5 hover:bg-white/10 whitespace-nowrap flex items-center gap-1.5 shrink-0" data-subtab="avatars" onclick="setCatalogSubtab('avatars')">
+                        <i data-lucide="user-circle" class="w-3.5 h-3.5"></i> أفاتار
+                    </button>
+                </div>
+
+                <div id="ui-store-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                    <!-- Products will be injected here by app.js -->
+                </div>
+                
+                <!-- Empty State for Grid -->
+                <div id="ui-store-grid-empty" class="hidden glass-panel rounded-2xl p-8 text-center opacity-70 border-dashed border-2 border-white/10 w-full mt-4">
+                    <i data-lucide="search-x" class="w-10 h-10 text-white/30 mx-auto mb-3"></i>
+                    <p class="text-sm text-white/70">لا توجد عناصر في هذا القسم حالياً.</p>
+                </div>
+            </div>
+
+            <!-- Rewards View (Chests, Wheel, Shards, Tickets) -->
+            <div id="ui-store-rewards" class="hidden w-full flex-col gap-6">
+                <!-- Tickets & Currency Status Header -->
+                <div class="glass-panel rounded-2xl p-4 grid grid-cols-3 gap-3 text-center border border-yellow-500/20">
+                    <div class="flex flex-col items-center">
+                        <span class="text-[11px] text-white/50 font-bold mb-1">تذاكر Scholar</span>
+                        <span id="ui-ticket-scholar" class="text-lg font-black text-blue-400">0</span>
+                    </div>
+                    <div class="flex flex-col items-center border-x border-white/10">
+                        <span class="text-[11px] text-white/50 font-bold mb-1">تذاكر Elite</span>
+                        <span id="ui-ticket-elite" class="text-lg font-black text-purple-400">0</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="text-[11px] text-white/50 font-bold mb-1">تذاكر Mythic</span>
+                        <span id="ui-ticket-mythic" class="text-lg font-black text-yellow-400">0</span>
+                    </div>
+                </div>
+
+                <!-- Chests Section -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                        <i data-lucide="gift" class="w-5 h-5 text-yellow-400"></i> صناديق الحظ الملحمية
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="ui-chests-container">
+                        <!-- Chest 1: Scholar Cache -->
+                        <div class="glass-panel p-5 rounded-2xl border border-blue-500/20 flex flex-col justify-between">
+                            <div>
+                                <div class="w-14 h-14 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 mb-3 mx-auto">
+                                    <i data-lucide="box" class="w-7 h-7"></i>
+                                </div>
+                                <h4 class="text-base font-black text-white text-center mb-1">Scholar Cache</h4>
+                                <p class="text-xs text-white/60 text-center mb-4">70% شائِع / 25% نادر / 5% ملحمي</p>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <button onclick="openChest('scholar', true)" class="w-full py-2.5 min-h-[56px] rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-2 btn-press">
+                                    استخدم التذكرة (<span id="ui-scholar-ticket-count">0</span>)
+                                </button>
+                                <button onclick="openChest('scholar', false)" class="w-full py-2.5 min-h-[56px] rounded-xl bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 font-bold text-xs flex items-center justify-center gap-2 btn-press">
+                                    فتح بـ 400 عملة <i data-lucide="coins" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chest 2: Elite Crate -->
+                        <div class="glass-panel p-5 rounded-2xl border border-purple-500/20 flex flex-col justify-between">
+                            <div>
+                                <div class="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-3 mx-auto">
+                                    <i data-lucide="gift" class="w-7 h-7"></i>
+                                </div>
+                                <h4 class="text-base font-black text-white text-center mb-1">Elite Crate</h4>
+                                <p class="text-xs text-white/60 text-center mb-4">65% نادر / 30% ملحمي / 5% أسطوري (شفقة مفعلة)</p>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <button onclick="openChest('elite', true)" class="w-full py-2.5 min-h-[56px] rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center justify-center gap-2 btn-press">
+                                    استخدم التذكرة (<span id="ui-elite-ticket-count">0</span>)
+                                </button>
+                                <button onclick="openChest('elite', false)" class="w-full py-2.5 min-h-[56px] rounded-xl bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 font-bold text-xs flex items-center justify-center gap-2 btn-press">
+                                    فتح بـ 1200 عملة <i data-lucide="coins" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chest 3: Mythic Vault -->
+                        <div class="glass-panel p-5 rounded-2xl border border-yellow-500/20 flex flex-col justify-between">
+                            <div>
+                                <div class="w-14 h-14 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 mb-3 mx-auto">
+                                    <i data-lucide="crown" class="w-7 h-7"></i>
+                                </div>
+                                <h4 class="text-base font-black text-white text-center mb-1">Mythic Vault</h4>
+                                <p class="text-xs text-white/60 text-center mb-4">70% ملحمي / 25% أسطوري / 5% خرافي (شفقة مفعلة)</p>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <button onclick="openChest('mythic', true)" class="w-full py-2.5 min-h-[56px] rounded-xl bg-yellow-600 hover:bg-yellow-500 text-white font-bold text-xs flex items-center justify-center gap-2 btn-press">
+                                    استخدم التذكرة (<span id="ui-mythic-ticket-count">0</span>)
+                                </button>
+                                <button onclick="openChest('mythic', false)" class="w-full py-2.5 min-h-[56px] rounded-xl bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 font-bold text-xs flex items-center justify-center gap-2 btn-press">
+                                    فتح بـ 4000 عملة <i data-lucide="coins" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wheel Section -->
+                <div class="glass-panel rounded-2xl p-6 border border-indigo-500/20 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3">
+                        <i data-lucide="disc" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-lg font-black text-white mb-1">عجلة الحظ الكبرى</h3>
+                    <p class="text-xs text-white/60 mb-4">رموز العجلة المتاحة: <span id="ui-wheel-tokens" class="text-yellow-400 font-bold">0</span></p>
+                    <button onclick="spinWheel()" class="px-8 py-3 min-h-[56px] rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-sm btn-press shadow-lg flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i> تدوير العجلة (1 رمز)
+                    </button>
+                </div>
+
+                <!-- Shard Shop & Endgame Section -->
+                <div class="glass-panel rounded-2xl p-6 border border-emerald-500/20">
+                    <h3 class="text-lg font-black text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="gem" class="w-5 h-5 text-emerald-400"></i> متجر الشظايا واستبدالها (Shard Shop)
+                    </h3>
+                    <p class="text-xs text-white/60 mb-4">استبدل شظاياك مقابل عملات ذهبية مباشرة، أو اجمع 100 شظية لتحويلها إلى رمز عجلة الحظ.</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] text-blue-400 font-bold block mb-1">شظايا نادرة</span>
+                                <span id="ui-shard-rare" class="text-lg font-black text-white mb-1 block">0</span>
+                                <span class="text-[10px] text-white/50 block mb-2">= 50 عملة</span>
+                            </div>
+                            <button onclick="redeemShard('rare')" class="w-full py-1.5 min-h-[44px] rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 font-bold text-xs btn-press">استبدال (1)</button>
+                        </div>
+                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] text-purple-400 font-bold block mb-1">شظايا ملحمية</span>
+                                <span id="ui-shard-epic" class="text-lg font-black text-white mb-1 block">0</span>
+                                <span class="text-[10px] text-white/50 block mb-2">= 100 عملة</span>
+                            </div>
+                            <button onclick="redeemShard('epic')" class="w-full py-1.5 min-h-[44px] rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-bold text-xs btn-press">استبدال (1)</button>
+                        </div>
+                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] text-yellow-400 font-bold block mb-1">شظايا أسطورية</span>
+                                <span id="ui-shard-legendary" class="text-lg font-black text-white mb-1 block">0</span>
+                                <span class="text-[10px] text-white/50 block mb-2">= 250 عملة</span>
+                            </div>
+                            <button onclick="redeemShard('legendary')" class="w-full py-1.5 min-h-[44px] rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 font-bold text-xs btn-press">استبدال (1)</button>
+                        </div>
+                        <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center flex flex-col justify-between">
+                            <div>
+                                <span class="text-[11px] text-red-400 font-bold block mb-1">شظايا خرافية</span>
+                                <span id="ui-shard-mythic" class="text-lg font-black text-white mb-1 block">0</span>
+                                <span class="text-[10px] text-white/50 block mb-2">= 500 عملة</span>
+                            </div>
+                            <button onclick="redeemShard('mythic')" class="w-full py-1.5 min-h-[44px] rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold text-xs btn-press">استبدال (1)</button>
+                        </div>
+                    </div>
+                    <button onclick="convertShardsToWheelToken()" class="w-full py-3 min-h-[56px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm btn-press flex items-center justify-center gap-2 shadow-lg">
+                        <i data-lucide="repeat" class="w-5 h-5"></i> تحويل 100 شظية إلى رمز عجلة (Wheel Token)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Inventory View -->
+            <div id="ui-store-inventory-view" class="hidden w-full flex-col gap-4">
+                <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
                     <i data-lucide="backpack" class="w-5 h-5 text-emerald-400"></i> خزانة المقتنيات
                 </h3>
                 <div id="ui-inventory-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
@@ -439,8 +609,8 @@
                     <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                         <i data-lucide="bar-chart-2" class="w-5 h-5 text-blue-400"></i> نشاط آخر 7 أيام
                     </h3>
-                    <div class="w-full flex justify-center items-center p-4 bg-[#0A0A0C] rounded-2xl border border-white/10 shadow-inner overflow-hidden">
-                        <div id="stat-weekly-activity-chart" class="w-full max-w-lg"></div>
+                    <div class="w-full p-4 bg-[#0A0A0C] rounded-2xl border border-white/10 shadow-inner overflow-x-auto hide-scrollbar">
+                        <div id="stat-weekly-activity-chart" class="w-full min-w-[320px] max-w-lg mx-auto"></div>
                     </div>
                 </div>
                 <div class="glass-panel rounded-[2rem] p-6 shadow-xl w-full">
@@ -744,7 +914,7 @@
                             <select id="new-error-severity" class="w-full bg-black/40 rounded-xl border border-white/10 text-white px-4 text-base min-h-[44px] focus:outline-none focus:border-rose-500/50 transition-all font-medium appearance-none">
                                 <option value="low">بسيطة</option>
                                 <option value="medium" selected>متوسطة</option>
-                                <option value="high">حرجة 🔥</option>
+                                <option value="high">مهمة 🔥</option>
                             </select>
                         </div>
                     </div>
@@ -1101,6 +1271,56 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Avatar Studio -->
+    <div id="modal-avatar-studio" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[300] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300 w-full h-full">
+        <div class="glass-panel rounded-[2rem] w-full max-w-[92vw] md:max-w-md max-h-[90dvh] overflow-y-auto p-6 relative transform scale-95 opacity-0 transition-all duration-300 shadow-2xl flex flex-col items-center text-center" id="modal-avatar-studio-content">
+            <button id="btn-close-avatar-studio" aria-label="إغلاق النافذة" class="absolute top-4 left-4 p-2 w-11 h-11 flex items-center justify-center text-white/40 hover:text-white transition-colors bg-white/5 rounded-full z-10">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div id="studio-avatar-rarity" class="absolute top-6 right-6 px-3 py-1 rounded-full text-[10px] font-black border z-10"></div>
+
+            <div class="relative w-48 h-48 sm:w-56 sm:h-56 mt-8 mb-6 rounded-3xl flex items-center justify-center shrink-0" id="studio-avatar-preview-container">
+                <div class="absolute inset-0 rounded-3xl opacity-20 blur-xl" id="studio-avatar-glow"></div>
+                <div class="w-full h-full relative z-10" id="studio-avatar-svg"></div>
+            </div>
+
+            <h2 id="studio-avatar-title" class="text-2xl font-black text-white mb-2"></h2>
+            <p id="studio-avatar-desc" class="text-sm text-white/60 mb-6 leading-relaxed px-2"></p>
+
+            <div id="studio-avatar-collection" class="hidden items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl mb-6">
+                <i data-lucide="layers" class="w-4 h-4 text-white/50"></i>
+                <span class="text-xs font-bold text-white/70" id="studio-avatar-collection-name"></span>
+            </div>
+
+            <div class="w-full mt-auto pt-2" id="studio-avatar-action-container">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Chest Reveal Bottom Sheet Modal -->
+    <div id="chest-reveal-modal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="glass-panel w-full sm:max-w-md rounded-t-[2.5rem] sm:rounded-[2rem] p-6 border border-yellow-500/30 bg-[#0A0A0C] shadow-2xl animate-in fade-in slide-in-from-bottom duration-300" role="dialog" aria-modal="true" aria-live="assertive">
+            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-6 sm:hidden"></div>
+            <div class="text-center">
+                <div id="chest-reveal-icon" class="w-20 h-20 rounded-2xl bg-yellow-500/20 border border-yellow-500/40 flex items-center justify-center text-yellow-400 mx-auto mb-4 shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+                    <i data-lucide="gift" class="w-10 h-10"></i>
+                </div>
+                <h3 id="chest-reveal-title" class="text-xl font-black text-white mb-2">مكافأة الصندوق</h3>
+                <p id="chest-reveal-desc" class="text-sm text-white/70 mb-6 leading-relaxed">تهانينا! لقد فتحت الصندوق وحصلت على مكافأة رائعة.</p>
+                
+                <div id="chest-reveal-reward-box" class="p-4 rounded-2xl bg-white/5 border border-white/10 mb-6 text-center">
+                    <span id="chest-reveal-reward-text" class="text-base font-black text-yellow-400"></span>
+                </div>
+
+                <button onclick="closeChestRevealModal()" class="w-full py-3.5 min-h-[56px] rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black font-black text-base btn-press shadow-lg flex items-center justify-center gap-2">
+                    استلام المكافأة
+                </button>
+            </div>
         </div>
     </div>
 
