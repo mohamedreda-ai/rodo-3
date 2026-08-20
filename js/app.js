@@ -67,7 +67,21 @@ const STORE_CATALOG = [
     { id: 'mystery_epic', title: 'صندوق الأساطير', desc: 'مكافآت ضخمة وفرصة لربح ألقاب حصرية.', cost: 800, category: 'mystery', icon: 'gift', rarity: 'legendary', type: 'mystery', pool: 'epic' },
     { id: 'power_xp_1', title: 'جرعة الحكمة', desc: 'تمنحك 200 XP فوراً.', cost: 250, category: 'powerups', icon: 'flask-round', rarity: 'common', type: 'instant', grantXp: 200 },
     { id: 'power_focus_1', title: 'لفيفة الزمن', desc: 'تضيف 60 دقيقة لسجل تركيزك.', cost: 400, category: 'powerups', icon: 'scroll', rarity: 'rare', type: 'instant', grantFocus: 60 },
-    { id: 'power_streak_1', title: 'درع الاستمرارية', desc: 'يحميك من فقدان السلسلة (يضيف 3 أيام).', cost: 600, category: 'powerups', icon: 'shield', rarity: 'epic', type: 'instant', grantStreak: 3 }
+    { id: 'power_streak_1', title: 'درع الاستمرارية', desc: 'يحميك من فقدان السلسلة (يضيف 3 أيام).', cost: 600, category: 'powerups', icon: 'shield', rarity: 'epic', type: 'instant', grantStreak: 3 },
+    { id: 'theme_void', title: 'فراغ الأبعاد', desc: 'مظهر أسطوري غامض يبتلع التشتت.', cost: 15000, category: 'themes', icon: 'moon', rarity: 'legendary', type: 'theme' },
+    { id: 'theme_mythic_fire', title: 'نار التنين', desc: 'مظهر خرافي لا يمتلكه إلا النخبة.', cost: 25000, category: 'themes', icon: 'flame', rarity: 'mythic', type: 'theme' },
+    { id: 'title_4', title: 'لقب: قاهر المستحيل', desc: 'لقب خرافي يثبت تفوقك المطلق.', cost: 20000, category: 'titles', icon: 'swords', rarity: 'mythic', type: 'title', label: 'قاهر المستحيل' },
+    { id: 'avatar_premium_2', title: 'أفاتار: باحثة السايبر', desc: 'شخصية نادرة بتصميم مستقبلي.', cost: 3000, category: 'avatars', icon: 'user', rarity: 'epic', type: 'avatar', avatarId: 10 },
+    { id: 'avatar_premium_3', title: 'أفاتار: حكيم الأكاديمية', desc: 'شخصية أسطورية تعكس الحكمة والوقار.', cost: 10000, category: 'avatars', icon: 'user', rarity: 'legendary', type: 'avatar', avatarId: 11 },
+    { id: 'avatar_premium_4', title: 'أفاتار: إمبراطورة المجد', desc: 'شخصية خرافية لا تليق إلا بالأساطير.', cost: 25000, category: 'avatars', icon: 'crown', rarity: 'mythic', type: 'avatar', avatarId: 12 },
+    { id: 'boost_xp_3', title: 'جوهر المعرفة الخالص', desc: 'يضاعف نقاط الخبرة 3x لمدة 12 ساعة.', cost: 8000, category: 'boosts', icon: 'zap', rarity: 'legendary', type: 'boost', boostType: 'xp', multiplier: 3, duration: 12 * 60 * 60 * 1000 },
+    { id: 'chest_scholar', title: 'Scholar Cache', desc: 'صندوق حظ يحتوي على عناصر بنسب متوازنة (70% شائِع / 25% نادر / 5% ملحمي).', cost: 400, category: 'rewards', icon: 'box', rarity: 'rare', type: 'chest', chestType: 'scholar' },
+    { id: 'chest_elite', title: 'Elite Crate', desc: 'صندوق النخبة مع نظام شفقة تصاعدي (65% نادر / 30% ملحمي / 5% أسطوري).', cost: 1200, category: 'rewards', icon: 'gift', rarity: 'epic', type: 'chest', chestType: 'elite' },
+    { id: 'chest_mythic', title: 'Mythic Vault', desc: 'صندوق الأساطير الخرافي مع ضمانات الشفقة (70% ملحمي / 25% أسطوري / 5% خرافي).', cost: 4000, category: 'rewards', icon: 'crown', rarity: 'legendary', type: 'chest', chestType: 'mythic' },
+    { id: 'boost_focus_deep', title: 'إكسير التركيز العميق', desc: 'يضاعف دقائق التركيز 2x لمدة ساعتين (مؤقت التركيز فقط).', cost: 60, category: 'boosts', icon: 'flame', rarity: 'rare', type: 'boost', boostType: 'focus', multiplier: 2, duration: 2 * 60 * 60 * 1000 },
+    { id: 'title_common_1', title: 'لقب: مبتدئ', desc: 'لقب بسيط يعبر عن بداية طريقك.', cost: 100, category: 'titles', icon: 'award', rarity: 'common', type: 'title', label: 'مبتدئ' },
+    { id: 'title_common_2', title: 'لقب: مجتهد', desc: 'لقب يثبت جديتك وعزمك.', cost: 200, category: 'titles', icon: 'award', rarity: 'common', type: 'title', label: 'مجتهد' },
+    { id: 'theme_common_1', title: 'رمادي هادئ', desc: 'مظهر هادئ مريح للعين أثناء المذاكرة.', cost: 200, category: 'themes', icon: 'palette', rarity: 'common', type: 'theme' }
 ];
 
 const STAGES = [
@@ -93,15 +107,18 @@ const ACHIEVEMENTS_TEMPLATES = [
 ];
 
 const AVATARS_DATA = [
-    { id: 1, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#3b82f6"/><circle cx="50" cy="65" r="28" fill="#fed7aa"/><path d="M22 65 Q50 20 78 65 Z" fill="#1f2937"/><rect x="25" y="50" width="50" height="18" rx="4" fill="#111827" opacity="0.9"/><rect x="25" y="50" width="50" height="4" fill="#374151"/></svg>` },
-    { id: 2, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#ec4899"/><path d="M20 90 C20 40 80 40 80 90 Z" fill="#4b5563"/><circle cx="50" cy="65" r="26" fill="#ffedd5"/><circle cx="37" cy="58" r="12" fill="#111827"/><circle cx="63" cy="58" r="12" fill="#111827"/><path d="M49 58 L51 58" stroke="#111827" stroke-width="4"/></svg>` },
-    { id: 3, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#f59e0b"/><circle cx="50" cy="65" r="28" fill="#fcd34d"/><path d="M20 50 Q50 30 80 50 C80 20 20 20 50 Z" fill="#78350f"/><path d="M22 55 L78 55 L72 70 L28 70 Z" fill="#000" opacity="0.8"/></svg>` },
-    { id: 4, reqLvl: 1, type: 'standard', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#10b981"/><circle cx="50" cy="65" r="26" fill="#fecaca"/><path d="M30 30 C 10 10, 50 10, 50 30 C 50 10, 90 10, 70 30 C 90 70, 70 90, 50 60 C 30 90, 10 70, 30 30 Z" fill="#9d174d"/><rect x="28" y="52" width="20" height="14" fill="#111827"/><rect x="52" y="52" width="20" height="14" fill="#111827"/><path d="M48 56 L52 56" stroke="#111827" stroke-width="3"/></svg>` },
-    { id: 5, reqLvl: 5, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#0f172a"/><circle cx="50" cy="65" r="28" fill="#e2e8f0"/><path d="M15 50 L30 10 L40 30 L50 5 L60 30 L70 10 L85 50 Z" fill="#38bdf8"/><rect x="20" y="52" width="60" height="12" rx="6" fill="#000"/><rect x="24" y="55" width="52" height="6" rx="3" fill="#06b6d4"/><circle cx="85" cy="58" r="3" fill="#38bdf8"/></svg>` },
-    { id: 6, reqLvl: 5, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#4c1d95"/><circle cx="50" cy="65" r="26" fill="#f3e8ff"/><circle cx="25" cy="35" r="15" fill="#d946ef"/><circle cx="75" cy="35" r="15" fill="#d946ef"/><path d="M35 30 Q50 20 65 30 Z" fill="#d946ef"/><path d="M25 65 L45 50 L50 55 L55 50 L75 65 L60 70 L40 70 Z" fill="#000"/><path d="M30 63 L43 54 M70 63 L57 54" stroke="#f0abfc" stroke-width="3"/></svg>` },
-    { id: 7, reqLvl: 10, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#7f1d1d"/><circle cx="50" cy="65" r="28" fill="#ffedd5"/><path d="M20 60 C 20 0, 50 20, 50 10 C 50 20, 80 0, 80 60 Z" fill="#f97316"/><path d="M30 60 C 30 20, 50 30, 50 25 C 50 30, 70 20, 70 60 Z" fill="#fef08a"/><path d="M22 55 L78 55 L65 70 L35 70 Z" fill="#000"/><path d="M25 57 L75 57" stroke="#ef4444" stroke-width="2"/></svg>` },
-    { id: 8, reqLvl: 10, type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#064e3b"/><circle cx="50" cy="65" r="26" fill="#ecfdf5"/><path d="M20 90 C15 30 85 30 80 90 Z" fill="#10b981"/><path d="M30 40 L40 25 L50 35 L60 25 L70 40 Z" fill="#fbbf24"/><circle cx="36" cy="58" r="14" fill="#000"/><circle cx="64" cy="58" r="14" fill="#000"/><path d="M36 58 L36 58 M64 58 L64 58" stroke="#34d399" stroke-width="8" stroke-linecap="round"/><path d="M48 58 L52 58" stroke="#000" stroke-width="3"/></svg>` },
-    { id: 9, reqLvl: 999, reqItem: 'avatar_premium_1', type: 'legendary', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#1e1b4b"/><circle cx="50" cy="65" r="28" fill="#c4b5fd"/><path d="M20 90 C20 40 80 40 80 90 Z" fill="#0f172a"/><path d="M35 30 L50 10 L65 30 Z" fill="#8b5cf6"/><circle cx="35" cy="55" r="8" fill="#fde047"/><circle cx="65" cy="55" r="8" fill="#fde047"/></svg>` }
+    { id: 1, reqLvl: 1, type: 'common', gender: 'male', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#3b82f6"/><circle cx="50" cy="65" r="28" fill="#fed7aa"/><path d="M22 65 Q50 20 78 65 Z" fill="#1f2937"/><rect x="25" y="50" width="50" height="18" rx="4" fill="#111827" opacity="0.9"/><rect x="25" y="50" width="50" height="4" fill="#374151"/></svg>` },
+    { id: 2, reqLvl: 1, type: 'common', gender: 'female', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#ec4899"/><path d="M20 90 C20 40 80 40 80 90 Z" fill="#4b5563"/><circle cx="50" cy="65" r="26" fill="#ffedd5"/><circle cx="37" cy="58" r="12" fill="#111827"/><circle cx="63" cy="58" r="12" fill="#111827"/><path d="M49 58 L51 58" stroke="#111827" stroke-width="4"/></svg>` },
+    { id: 3, reqLvl: 1, type: 'common', gender: 'male', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#f59e0b"/><circle cx="50" cy="65" r="28" fill="#fcd34d"/><path d="M20 50 Q50 30 80 50 C80 20 20 20 50 Z" fill="#78350f"/><path d="M22 55 L78 55 L72 70 L28 70 Z" fill="#000" opacity="0.8"/></svg>` },
+    { id: 4, reqLvl: 1, type: 'common', gender: 'female', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#10b981"/><circle cx="50" cy="65" r="26" fill="#fecaca"/><path d="M30 30 C 10 10, 50 10, 50 30 C 50 10, 90 10, 70 30 C 90 70, 70 90, 50 60 C 30 90, 10 70, 30 30 Z" fill="#9d174d"/><rect x="28" y="52" width="20" height="14" fill="#111827"/><rect x="52" y="52" width="20" height="14" fill="#111827"/><path d="M48 56 L52 56" stroke="#111827" stroke-width="3"/></svg>` },
+    { id: 5, reqLvl: 5, type: 'rare', gender: 'male', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#0f172a"/><circle cx="50" cy="65" r="28" fill="#e2e8f0"/><path d="M15 50 L30 10 L40 30 L50 5 L60 30 L70 10 L85 50 Z" fill="#38bdf8"/><rect x="20" y="52" width="60" height="12" rx="6" fill="#000"/><rect x="24" y="55" width="52" height="6" rx="3" fill="#06b6d4"/><circle cx="85" cy="58" r="3" fill="#38bdf8"/></svg>` },
+    { id: 6, reqLvl: 5, type: 'rare', gender: 'female', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#4c1d95"/><circle cx="50" cy="65" r="26" fill="#f3e8ff"/><circle cx="25" cy="35" r="15" fill="#d946ef"/><circle cx="75" cy="35" r="15" fill="#d946ef"/><path d="M35 30 Q50 20 65 30 Z" fill="#d946ef"/><path d="M25 65 L45 50 L50 55 L55 50 L75 65 L60 70 L40 70 Z" fill="#000"/><path d="M30 63 L43 54 M70 63 L57 54" stroke="#f0abfc" stroke-width="3"/></svg>` },
+    { id: 7, reqLvl: 10, type: 'epic', gender: 'male', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#7f1d1d"/><circle cx="50" cy="65" r="28" fill="#ffedd5"/><path d="M20 60 C 20 0, 50 20, 50 10 C 50 20, 80 0, 80 60 Z" fill="#f97316"/><path d="M30 60 C 30 20, 50 30, 50 25 C 50 30, 70 20, 70 60 Z" fill="#fef08a"/><path d="M22 55 L78 55 L65 70 L35 70 Z" fill="#000"/><path d="M25 57 L75 57" stroke="#ef4444" stroke-width="2"/></svg>` },
+    { id: 8, reqLvl: 10, type: 'epic', gender: 'female', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#064e3b"/><circle cx="50" cy="65" r="26" fill="#ecfdf5"/><path d="M20 90 C15 30 85 30 80 90 Z" fill="#10b981"/><path d="M30 40 L40 25 L50 35 L60 25 L70 40 Z" fill="#fbbf24"/><circle cx="36" cy="58" r="14" fill="#000"/><circle cx="64" cy="58" r="14" fill="#000"/><path d="M36 58 L36 58 M64 58 L64 58" stroke="#34d399" stroke-width="8" stroke-linecap="round"/><path d="M48 58 L52 58" stroke="#000" stroke-width="3"/></svg>` },
+    { id: 9, reqLvl: 999, reqItem: 'avatar_premium_1', type: 'legendary', gender: 'male', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#1e1b4b"/><circle cx="50" cy="65" r="28" fill="#c4b5fd"/><path d="M20 90 C20 40 80 40 80 90 Z" fill="#0f172a"/><path d="M35 30 L50 10 L65 30 Z" fill="#8b5cf6"/><circle cx="35" cy="55" r="8" fill="#fde047"/><circle cx="65" cy="55" r="8" fill="#fde047"/></svg>` },
+    { id: 10, reqLvl: 999, reqItem: 'avatar_premium_2', type: 'epic', gender: 'female', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#0891b2"/><circle cx="50" cy="60" r="25" fill="#fbcfe8"/><path d="M25 90 Q50 40 75 90 Z" fill="#164e63"/><path d="M30 40 Q50 20 70 40 Z" fill="#c026d3"/><circle cx="40" cy="55" r="4" fill="#000"/><circle cx="60" cy="55" r="4" fill="#000"/></svg>` },
+    { id: 11, reqLvl: 999, reqItem: 'avatar_premium_3', type: 'legendary', gender: 'male', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#b45309"/><circle cx="50" cy="55" r="25" fill="#ffedd5"/><path d="M20 100 Q50 30 80 100 Z" fill="#78350f"/><rect x="35" y="20" width="30" height="15" fill="#1e3a8a"/><rect x="30" y="35" width="40" height="5" fill="#1e3a8a"/><circle cx="40" cy="50" r="3" fill="#000"/><circle cx="60" cy="50" r="3" fill="#000"/><path d="M40 70 Q50 85 60 70 Z" fill="#d97706"/></svg>` },
+    { id: 12, reqLvl: 999, reqItem: 'avatar_premium_4', type: 'mythic', gender: 'female', svg: `<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" fill="#e11d48"/><circle cx="50" cy="60" r="24" fill="#ffe4e6"/><path d="M15 100 Q50 40 85 100 Z" fill="#4c0519"/><path d="M20 50 Q50 0 80 50 Z" fill="#fbbf24"/><circle cx="50" cy="20" r="8" fill="#ef4444"/><circle cx="38" cy="55" r="4" fill="#000"/><circle cx="62" cy="55" r="4" fill="#000"/></svg>` }
 ];
 
 const DEFAULT_HABITS = [
@@ -162,7 +179,15 @@ const INITIAL_STATE = {
         activeBoosts: [],
         activeTheme: null,
         activeTitle: null,
-        activeEffects: []
+        activeEffects: [],
+        shards: { rare: 0, epic: 0, legendary: 0, mythic: 0 },
+        tickets: { scholar: 0, elite: 0, mythic: 0 },
+        wheelTokens: 0,
+        pity: {
+            scholar: { count: 0, softPity: 0 },
+            elite: { count: 0, softPity: 0 },
+            mythic: { count: 0, softPity: 0 }
+        }
     }
 };
 
@@ -170,8 +195,41 @@ let state = JSON.parse(JSON.stringify(INITIAL_STATE));
 let stateSnapshot = null;
 let pendingRandomEvent = null;
 let stopwatchInterval = null;
-let currentStoreCategory = 'all';
+let currentStoreCategory = 'storefront';
+let currentCatalogSubtab = 'all';
 let storeBoostInterval = null;
+
+function setCatalogSubtab(subtab) {
+    currentCatalogSubtab = subtab;
+    const btns = document.querySelectorAll('.catalog-subtab-btn');
+    btns.forEach(b => {
+        b.classList.remove('active', 'bg-blue-500/20', 'text-blue-400', 'border-blue-500/30');
+        b.classList.add('bg-white/5', 'text-white/50', 'border-white/5');
+        if (b.dataset.subtab === subtab) {
+            b.classList.remove('bg-white/5', 'text-white/50', 'border-white/5');
+            b.classList.add('active', 'bg-blue-500/20', 'text-blue-400', 'border-blue-500/30');
+        }
+    });
+    renderStoreGrid();
+}
+
+function redeemShard(type) {
+    const values = { rare: 50, epic: 100, legendary: 250, mythic: 500 };
+    const coinVal = values[type] || 50;
+
+    executeStoreTransaction(() => {
+        if (!state.store.shards || (state.store.shards[type] || 0) <= 0) {
+            showToast('لا توجد شظايا كافية من هذا النوع للاستبدال.', 'info');
+            return false;
+        }
+        state.store.shards[type]--;
+        state.coins += coinVal;
+        playSound('reward');
+        showToast(`تم استبدال شظية بـ ${coinVal} عملة ذهبية بنجاح! 🪙`, 'success', true);
+        renderStore();
+        return true;
+    });
+}
 
 let currentErrorFilterSubject = 'all';
 let currentErrorFilterStatus = 'all';
@@ -182,10 +240,310 @@ let currentActiveErrorId = null;
 function runMigrations(loadedState) {
     let s = loadedState;
     if (typeof s.version !== 'number') s.version = 0;
-    if (s.version < 1) {
-        s.version = 1;
+    if (!s.store) s.store = {};
+    if (!s.store.shards) s.store.shards = { rare: 0, epic: 0, legendary: 0, mythic: 0 };
+    if (!s.store.tickets) s.store.tickets = { scholar: 0, elite: 0, mythic: 0 };
+    if (typeof s.store.wheelTokens !== 'number') s.store.wheelTokens = 0;
+    if (!s.store.pity) s.store.pity = { scholar: { count: 0 }, elite: { count: 0 }, mythic: { count: 0 } };
+
+    if (Array.isArray(s.store.ownedItems)) {
+        if (s.store.ownedItems.includes('mystery_small')) {
+            s.store.tickets.scholar = (s.store.tickets.scholar || 0) + 1;
+            s.store.ownedItems = s.store.ownedItems.filter(id => id !== 'mystery_small');
+        }
+        if (s.store.ownedItems.includes('mystery_epic')) {
+            s.store.tickets.elite = (s.store.tickets.elite || 0) + 1;
+            s.store.ownedItems = s.store.ownedItems.filter(id => id !== 'mystery_epic');
+        }
+    }
+    if (Array.isArray(s.store.consumables)) {
+        s.store.consumables.forEach(c => {
+            if (c.itemId === 'mystery_small') {
+                s.store.tickets.scholar = (s.store.tickets.scholar || 0) + 1;
+            }
+            if (c.itemId === 'mystery_epic') {
+                s.store.tickets.elite = (s.store.tickets.elite || 0) + 1;
+            }
+        });
+        s.store.consumables = s.store.consumables.filter(c => c.itemId !== 'mystery_small' && c.itemId !== 'mystery_epic');
+    }
+
+    if (s.version < 2) {
+        s.version = 2;
     }
     return s;
+}
+
+function executeStoreTransaction(transactionFn) {
+    if (state._storeLocked) {
+        showToast('هناك معاملة قيد التنفيذ، يرجى الانتظار.', 'info');
+        return false;
+    }
+    state._storeLocked = true;
+    const snapshot = JSON.parse(JSON.stringify(state));
+
+    try {
+        const success = transactionFn();
+        if (!success) {
+            state._storeLocked = false;
+            return false;
+        }
+
+        checkAchievements();
+        localStorage.setItem('hsQuestPremium_v4', JSON.stringify(state));
+        isStorageWarningActive = false;
+        state._storeLocked = false;
+        updateGlobalUI();
+        renderStore();
+        return true;
+    } catch (e) {
+        console.error("Store transaction failed, rolling back:", e);
+        state = JSON.parse(JSON.stringify(snapshot));
+        state._storeLocked = false;
+        saveState();
+        renderStore();
+        updateGlobalUI();
+        showToast('فشل حفظ المعاملة في التخزين. تم التراجع عن العملية واستعادة الحالة السابقة.', 'info');
+        return false;
+    }
+}
+
+function openChest(chestType, useTicket) {
+    let cost = 0;
+    let ticketKey = '';
+    let targetRarity = '';
+
+    if (chestType === 'scholar') {
+        cost = 400; ticketKey = 'scholar'; targetRarity = 'epic';
+    } else if (chestType === 'elite') {
+        cost = 1200; ticketKey = 'elite'; targetRarity = 'legendary';
+    } else if (chestType === 'mythic') {
+        cost = 4000; ticketKey = 'mythic'; targetRarity = 'mythic';
+    } else {
+        return;
+    }
+
+    if (!state.store.pity) state.store.pity = {};
+    if (!state.store.pity[chestType]) state.store.pity[chestType] = { count: 0 };
+
+    executeStoreTransaction(() => {
+        if (useTicket) {
+            if (!state.store.tickets || state.store.tickets[ticketKey] <= 0) {
+                showToast('لا توجد تذكرة متاحة لهذا الصندوق.', 'info');
+                return false;
+            }
+            state.store.tickets[ticketKey]--;
+        } else {
+            if (state.coins < cost) {
+                showToast(`تحتاج إلى ${cost - state.coins} ذهب إضافي لفتح الصندوق.`, 'info');
+                return false;
+            }
+            state.coins -= cost;
+        }
+
+        let pityObj = state.store.pity[chestType];
+        let targetChance = 0.05 + (pityObj.count * 0.02);
+        if (pityObj.count >= 9) targetChance = 1.0;
+
+        const cryptoArray = new Uint32Array(1);
+        window.crypto.getRandomValues(cryptoArray);
+        const rand = cryptoArray[0] / (0xffffffff + 1);
+
+        let rolledRarity = '';
+        if (rand < targetChance || pityObj.count >= 9) {
+            rolledRarity = targetRarity;
+            pityObj.count = 0;
+        } else {
+            pityObj.count++;
+            const nonTargetRand = (rand - targetChance) / (1.0 - targetChance);
+            if (chestType === 'scholar') {
+                if (nonTargetRand < (0.70 / 0.95)) rolledRarity = 'common';
+                else rolledRarity = 'rare';
+            } else if (chestType === 'elite') {
+                if (nonTargetRand < (0.65 / 0.95)) rolledRarity = 'rare';
+                else rolledRarity = 'epic';
+            } else if (chestType === 'mythic') {
+                if (nonTargetRand < (0.70 / 0.95)) rolledRarity = 'epic';
+                else rolledRarity = 'legendary';
+            }
+        }
+
+        const eligibleItems = STORE_CATALOG.filter(item => item.rarity === rolledRarity && ['theme', 'title', 'avatar', 'effect', 'boost', 'instant'].includes(item.type));
+        let rewardResult = null;
+        let isDuplicate = false;
+
+        if (eligibleItems.length > 0) {
+            const randIdxArray = new Uint32Array(1);
+            window.crypto.getRandomValues(randIdxArray);
+            const chosenItem = eligibleItems[randIdxArray[0] % eligibleItems.length];
+
+            const isPermanent = ['theme', 'title', 'avatar', 'effect'].includes(chosenItem.type);
+            const alreadyOwned = isPermanent && state.store.ownedItems.includes(chosenItem.id);
+
+            if (!alreadyOwned) {
+                if (isPermanent) {
+                    state.store.ownedItems.push(chosenItem.id);
+                    if (chosenItem.type === 'avatar') renderProfile();
+                } else {
+                    state.store.consumables.push({ instanceId: Date.now() + Math.random(), itemId: chosenItem.id });
+                }
+                rewardResult = { type: 'item', item: chosenItem };
+            } else {
+                isDuplicate = true;
+                let duplicateRewardText = '';
+                if (rolledRarity === 'common') {
+                    state.coins += 100;
+                    duplicateRewardText = '100 عملة (تعويض عن تكرار شائع)';
+                } else if (rolledRarity === 'rare') {
+                    state.store.shards.rare += 10;
+                    duplicateRewardText = '10 شظايا نادرة';
+                } else if (rolledRarity === 'epic') {
+                    state.store.shards.epic += 20;
+                    duplicateRewardText = '20 شظية ملحمية';
+                } else if (rolledRarity === 'legendary') {
+                    state.store.shards.legendary += 50;
+                    duplicateRewardText = '50 شظية أسطورية';
+                } else if (rolledRarity === 'mythic') {
+                    state.store.shards.mythic += 100;
+                    duplicateRewardText = '100 شظية خرافية';
+                }
+                rewardResult = { type: 'duplicate', item: chosenItem, rewardText: duplicateRewardText };
+            }
+        } else {
+            state.coins += 200;
+            rewardResult = { type: 'fallback', rewardText: '200 عملة ذهبية' };
+        }
+
+        playSound('epic_hit');
+        showChestRevealModal(chestType, rewardResult, isDuplicate);
+        return true;
+    });
+}
+
+function spinWheel() {
+    if (!state.store.wheelTokens || state.store.wheelTokens <= 0) {
+        showToast('تحتاج إلى رمز عجلة (Wheel Token) للدوران.', 'info');
+        return;
+    }
+
+    executeStoreTransaction(() => {
+        state.store.wheelTokens--;
+
+        const cryptoArray = new Uint32Array(1);
+        window.crypto.getRandomValues(cryptoArray);
+        const rand = cryptoArray[0] / (0xffffffff + 1);
+
+        let spinResultText = '';
+        if (rand < 0.50) {
+            state.coins += 500;
+            spinResultText = '500 عملة ذهبية 🪙';
+        } else if (rand < 0.80) {
+            state.xp += 500;
+            spinResultText = '500 نقطة خبرة (XP) ⭐';
+        } else if (rand < 0.95) {
+            state.store.tickets.elite++;
+            spinResultText = 'تذكرة النخبة (Elite Ticket) 🎟️';
+        } else {
+            state.store.tickets.mythic++;
+            spinResultText = 'تذكرة أسطورية (Mythic Ticket) 👑';
+        }
+
+        playSound('reward');
+        showToast(`نتيجة عجلة الحظ: ${spinResultText}`, 'success', true);
+        renderStore();
+        return true;
+    });
+}
+
+function convertShardsToWheelToken() {
+    executeStoreTransaction(() => {
+        const shards = state.store.shards;
+        const totalShards = (shards.rare || 0) + (shards.epic || 0) + (shards.legendary || 0) + (shards.mythic || 0);
+
+        if (totalShards < 100) {
+            showToast('تحتاج إلى 100 شظية على الأقل لتحويلها إلى رمز عجلة.', 'info');
+            return false;
+        }
+
+        let needed = 100;
+        const order = ['rare', 'epic', 'legendary', 'mythic'];
+        for (const type of order) {
+            if (needed <= 0) break;
+            const available = shards[type] || 0;
+            const take = Math.min(available, needed);
+            shards[type] -= take;
+            needed -= take;
+        }
+
+        state.store.wheelTokens = (state.store.wheelTokens || 0) + 1;
+        playSound('reward');
+        showToast('تم تحويل 100 شظية إلى رمز عجلة بنجاح! 🎡', 'success', true);
+        renderStore();
+        return true;
+    });
+}
+
+function showChestRevealModal(chestType, rewardResult, isDuplicate) {
+    const modal = document.getElementById('chest-reveal-modal');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('chest-reveal-title');
+    const descEl = document.getElementById('chest-reveal-desc');
+    const rewardTextEl = document.getElementById('chest-reveal-reward-text');
+
+    const chestNames = { scholar: 'Scholar Cache', elite: 'Elite Crate', mythic: 'Mythic Vault' };
+    if (titleEl) titleEl.innerText = `فتح ${chestNames[chestType] || 'الصندوق'}`;
+
+    if (rewardResult.type === 'item') {
+        if (descEl) descEl.innerText = 'تهانينا! لقد حصلت على عنصر جديد مميز!';
+        if (rewardTextEl) rewardTextEl.innerText = rewardResult.item.title;
+    } else if (rewardResult.type === 'duplicate') {
+        if (descEl) descEl.innerText = 'العنصر مكرر! تم تحويله إلى مكافأة بديلة:';
+        if (rewardTextEl) rewardTextEl.innerText = rewardResult.rewardText;
+    } else {
+        if (descEl) descEl.innerText = 'مكافأة صندوق الحظ:';
+        if (rewardTextEl) rewardTextEl.innerText = rewardResult.rewardText;
+    }
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    lucide.createIcons({ root: modal });
+}
+
+function closeChestRevealModal() {
+    const modal = document.getElementById('chest-reveal-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    saveState();
+    renderStore();
+    updateGlobalUI();
+}
+
+function updateRewardsUI() {
+    if (!state.store) return;
+    if (!state.store.tickets) state.store.tickets = { scholar: 0, elite: 0, mythic: 0 };
+    if (!state.store.shards) state.store.shards = { rare: 0, epic: 0, legendary: 0, mythic: 0 };
+    if (typeof state.store.wheelTokens !== 'number') state.store.wheelTokens = 0;
+
+    const setTxt = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val;
+    };
+
+    setTxt('ui-ticket-scholar', state.store.tickets.scholar || 0);
+    setTxt('ui-ticket-elite', state.store.tickets.elite || 0);
+    setTxt('ui-ticket-mythic', state.store.tickets.mythic || 0);
+    setTxt('ui-scholar-ticket-count', state.store.tickets.scholar || 0);
+    setTxt('ui-elite-ticket-count', state.store.tickets.elite || 0);
+    setTxt('ui-mythic-ticket-count', state.store.tickets.mythic || 0);
+    setTxt('ui-wheel-tokens', state.store.wheelTokens || 0);
+
+    setTxt('ui-shard-rare', state.store.shards.rare || 0);
+    setTxt('ui-shard-epic', state.store.shards.epic || 0);
+    setTxt('ui-shard-legendary', state.store.shards.legendary || 0);
+    setTxt('ui-shard-mythic', state.store.shards.mythic || 0);
+    lucide.createIcons();
 }
 
 let rawSavedState = null;
@@ -582,11 +940,13 @@ function getAvatarDecorationsHtml(level, isSmall = false) {
     if (level >= 10) html += `<div class="absolute ${isSmall ? '-left-1' : '-left-2'} ${sClass} bg-slate-800 rounded-full border-slate-500 flex items-center justify-center z-20 shadow-lg"><i data-lucide="shield" class="${iClass} text-slate-300"></i></div>`;
     if (level >= 15) html += `<div class="absolute ${isSmall ? '-right-1' : '-right-2'} ${sClass} bg-amber-900 rounded-full border-amber-500 flex items-center justify-center z-20 shadow-lg"><i data-lucide="sword" class="${iClass} text-amber-400"></i></div>`;
     if (level >= 30) html += `<div class="absolute left-1/2 -translate-x-1/2 ${cClass} flex items-center justify-center z-20 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]"><i data-lucide="crown" class="w-full h-full text-yellow-400 fill-yellow-400"></i></div>`;
+    if (level >= 50) html += `<div class="absolute left-1/2 -translate-x-1/2 ${cClass} flex items-center justify-center z-20 drop-shadow-[0_0_15px_rgba(225,29,72,0.8)] -top-4"><i data-lucide="sparkles" class="w-full h-full text-rose-500 fill-rose-500"></i></div>`;
     
     return html;
 }
 
 function getAvatarAuraClass(level) {
+    if (level >= 50) return 'ring-2 ring-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.6)] animate-[pulse_2s_infinite]';
     if (level >= 30) return 'ring-2 ring-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.6)] animate-[pulse_2s_infinite]';
     if (level >= 20) return 'ring-2 ring-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.6)] animate-[pulse_3s_infinite]';
     return 'border border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.15)]';
@@ -819,14 +1179,15 @@ function updateDailyStreak() {
         }, 1000);
     }
     state.bestStreak = Math.max(state.bestStreak || 0, state.streak);
-    state.lastActionDate = todayStr; saveState();
-}
+    
+    if (state.streak >= 30 && !state.store.mythicStreakAwarded) {
+        state.store.mythicStreakAwarded = true;
+        if (!state.store.tickets) state.store.tickets = { scholar: 0, elite: 0, mythic: 0 };
+        state.store.tickets.mythic++;
+        showToast('وصلت إلى سلسلة 30 يوماً! حصلت على تذكرة أسطورية (Mythic Ticket) 👑', 'achievement', true);
+    }
 
-function trackProductivity(value) {
-    const daysMap = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    const currentDayArabic = daysMap[new Date().getDay()];
-    state.productivity[currentDayArabic] = (state.productivity[currentDayArabic] || 0) + value;
-    saveState();
+    state.lastActionDate = todayStr; saveState();
 }
 
 function updateHeatmap(points) {
@@ -1183,26 +1544,48 @@ function toggleHabit(id) {
     const localSnapshot = saveSnapshot();
     habit.completed = !habit.completed;
 
-    if (habit.completed) {
+        if (habit.completed) {
         const finalXp = Math.floor(10 * getBoostMultiplier('xp'));
         const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
+        habit.earnedXp = finalXp;
+        habit.earnedCoins = finalCoins;
+        
         state.xp += finalXp; state.coins += finalCoins; 
         state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
         updateHeatmap(finalXp);
-        playSound('pop'); showToast(`أحسنت! أتممت عادة اليوم. +${finalXp} XP وذهب`, 'success', true, localSnapshot); trackProductivity(5);
+
+        const todayStr = getLocalDateStr();
+        if (state.habits.length > 0 && state.habits.every(h => h.completed) && state.lastScholarTicketDate !== todayStr) {
+            state.lastScholarTicketDate = todayStr;
+            if (!state.store.tickets) state.store.tickets = { scholar: 0, elite: 0, mythic: 0 };
+            state.store.tickets.scholar++;
+            showToast('أكملت جميع العادات اليومية! حصلت على تذكرة Scholar Ticket 🎟️', 'achievement', true, localSnapshot);
+        } else {
+            playSound('pop'); showToast(`أحسنت! أتممت عادة اليوم. +${finalXp} XP وذهب`, 'success', true, localSnapshot);
+        }
     } else {
-        const finalXp = Math.floor(10 * getBoostMultiplier('xp'));
-        const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
-        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins); 
-        state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
-        updateHeatmap(-finalXp);
-        showToast('تم التراجع عن العادة', 'info', true, localSnapshot); trackProductivity(-5);
+        const revXp = habit.earnedXp !== undefined ? habit.earnedXp : 10;
+        const revCoins = habit.earnedCoins !== undefined ? habit.earnedCoins : 10;
+        
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins); 
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
+        updateHeatmap(-revXp);
+        showToast('تم التراجع عن العادة', 'info', true, localSnapshot);
     }
     saveState(); renderHabits();
 }
 
 function deleteHabit(id, e) {
-    e.stopPropagation(); const localSnapshot = saveSnapshot(); state.habits = state.habits.filter(h => h.id !== id);
+    e.stopPropagation(); const localSnapshot = saveSnapshot(); 
+    const habit = state.habits.find(h => h.id === id);
+    if (habit && habit.completed) {
+        const revXp = habit.earnedXp !== undefined ? habit.earnedXp : 10;
+        const revCoins = habit.earnedCoins !== undefined ? habit.earnedCoins : 10;
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins); 
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
+        updateHeatmap(-revXp);
+    }
+    state.habits = state.habits.filter(h => h.id !== id);
     saveState(); renderHabits(); showToast('تم حذف العادة', 'info', true, localSnapshot);
 }
 
@@ -1295,25 +1678,37 @@ function toggleBigQuest(id) {
     if (goal.completed) {
         const finalXp = Math.floor(500 * getBoostMultiplier('xp'));
         const finalCoins = Math.floor(500 * getBoostMultiplier('coin'));
+        goal.earnedXp = finalXp;
+        goal.earnedCoins = finalCoins;
+
         state.xp += finalXp; state.coins += finalCoins; 
         state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
         updateHeatmap(100);
         updateDailyStreak(); playSound('reward');
         showToast(`إنجاز أسطوري للمهمة الكبرى! +${finalXp} XP وذهب`, 'success', true, localSnapshot);
-        trackProductivity(100);
     } else {
-        const finalXp = Math.floor(500 * getBoostMultiplier('xp'));
-        const finalCoins = Math.floor(500 * getBoostMultiplier('coin'));
-        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins);
-        state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
+        const revXp = goal.earnedXp !== undefined ? goal.earnedXp : 500;
+        const revCoins = goal.earnedCoins !== undefined ? goal.earnedCoins : 500;
+
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins);
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
         updateHeatmap(-100);
-        showToast('تم التراجع عن المهمة الكبرى', 'info', true, localSnapshot); trackProductivity(-100);
+        showToast('تم التراجع عن المهمة الكبرى', 'info', true, localSnapshot);
     }
     saveState(); renderGoals();
 }
 
 function deleteBigQuest(id, event) {
-    event.stopPropagation(); const localSnapshot = saveSnapshot(); state.goals = state.goals.filter(g => g.id !== id);
+    event.stopPropagation(); const localSnapshot = saveSnapshot(); 
+    const goal = state.goals.find(g => g.id === id);
+    if (goal && goal.completed) {
+        const revXp = goal.earnedXp !== undefined ? goal.earnedXp : 500;
+        const revCoins = goal.earnedCoins !== undefined ? goal.earnedCoins : 500;
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins);
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
+        updateHeatmap(-100);
+    }
+    state.goals = state.goals.filter(g => g.id !== id);
     saveState(); renderGoals(); showToast('تم الحذف', 'info', true, localSnapshot);
 }
 
@@ -1365,6 +1760,99 @@ function selectAvatar(id, reqLvl, reqItem) {
     state.avatarId = id; saveState(); renderProfile(); showToast('تم تغيير هويتك بنجاح!', 'success');
 }
 
+function openAvatarStudio(id) {
+    const av = AVATARS_DATA.find(a => a.id === id);
+    if (!av) return;
+
+    const modal = document.getElementById('modal-avatar-studio');
+    const svgContainer = document.getElementById('studio-avatar-svg');
+    const titleEl = document.getElementById('studio-avatar-title');
+    const descEl = document.getElementById('studio-avatar-desc');
+    const rarityEl = document.getElementById('studio-avatar-rarity');
+    const actionContainer = document.getElementById('studio-avatar-action-container');
+    const glowEl = document.getElementById('studio-avatar-glow');
+
+    if (!modal || !svgContainer) return;
+
+    svgContainer.innerHTML = av.svg;
+    
+    let storeItem = null;
+    if (av.reqItem) {
+        storeItem = STORE_CATALOG.find(i => i.id === av.reqItem);
+    }
+
+    if (titleEl) titleEl.innerText = storeItem ? storeItem.title : `أفاتار المستوى ${av.reqLvl}`;
+    if (descEl) descEl.innerText = storeItem ? storeItem.desc : 'أفاتار أساسي يعكس تقدمك في رحلتك.';
+
+    const rarity = av.type || 'common';
+    const rarityColors = {
+        'common': 'text-gray-400 border-gray-500/30 bg-gray-500/10',
+        'rare': 'text-blue-400 border-blue-500/30 bg-blue-500/10',
+        'epic': 'text-purple-400 border-purple-500/30 bg-purple-500/10',
+        'legendary': 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10',
+        'mythic': 'text-rose-400 border-rose-500/30 bg-rose-500/10'
+    };
+    const rarityLabels = {
+        'common': 'شائع', 'rare': 'نادر', 'epic': 'ملحمي', 'legendary': 'أسطوري', 'mythic': 'خرافي'
+    };
+
+    if (rarityEl) {
+        rarityEl.className = `absolute top-6 right-6 px-3 py-1 rounded-full text-[10px] font-black border z-10 ${rarityColors[rarity] || rarityColors['common']}`;
+        rarityEl.innerText = rarityLabels[rarity] || 'شائع';
+    }
+
+    if (glowEl) {
+        glowEl.className = `absolute inset-0 rounded-3xl opacity-20 blur-xl bg-${rarity === 'mythic' ? 'rose' : rarity === 'legendary' ? 'yellow' : rarity === 'epic' ? 'purple' : rarity === 'rare' ? 'blue' : 'gray'}-500`;
+    }
+
+    const level = getLevel();
+    const isLocked = av.reqItem ? (!state.store || !state.store.ownedItems.includes(av.reqItem)) : (level < av.reqLvl);
+    const isSelected = state.avatarId === av.id;
+
+    if (actionContainer) {
+        if (isSelected) {
+            actionContainer.innerHTML = `<button class="w-full py-3 min-h-[44px] rounded-xl bg-white/10 text-white/50 font-bold text-sm cursor-not-allowed">مُستخدم حالياً</button>`;
+        } else if (isLocked) {
+            if (av.reqItem && storeItem) {
+                const canAfford = state.coins >= storeItem.cost;
+                actionContainer.innerHTML = `
+                    <button onclick="buyStoreItem('${storeItem.id}'); closeAvatarStudio();" class="w-full py-3 min-h-[44px] rounded-xl ${canAfford ? 'bg-yellow-500 text-black hover:bg-yellow-400' : 'bg-white/5 text-white/30 cursor-not-allowed'} font-black text-sm flex justify-center items-center gap-2 btn-press transition-colors">
+                        شراء بـ ${storeItem.cost} <i data-lucide="coins" class="w-5 h-5"></i>
+                    </button>
+                `;
+            } else {
+                actionContainer.innerHTML = `<button class="w-full py-3 min-h-[44px] rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 font-bold text-sm cursor-not-allowed">مقفول (يتطلب مستوى ${av.reqLvl})</button>`;
+            }
+        } else {
+            actionContainer.innerHTML = `<button onclick="selectAvatar(${av.id}, ${av.reqLvl}, '${av.reqItem || ''}'); closeAvatarStudio();" class="w-full py-3 min-h-[44px] rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm btn-press transition-colors shadow-[0_0_15px_rgba(37,99,235,0.4)]">تجهيز الأفاتار</button>`;
+        }
+        lucide.createIcons({ root: actionContainer });
+    }
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('modal-overlay-enter');
+        const content = document.getElementById('modal-avatar-studio-content');
+        if (content) {
+            content.classList.remove('opacity-0', 'scale-95');
+            content.classList.add('modal-animate-enter');
+        }
+    }, 10);
+}
+
+function closeAvatarStudio() {
+    const modal = document.getElementById('modal-avatar-studio');
+    if (!modal) return;
+    modal.classList.remove('modal-overlay-enter');
+    modal.classList.add('opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }, 300);
+}
+
 function renderProfile() {
     const nameInput = document.getElementById('ui-profile-name');
     if(nameInput) nameInput.value = state.userName;
@@ -1389,7 +1877,7 @@ function renderProfile() {
         const scale = isSelected ? 'scale-95' : '';
 
         return `
-        <div onclick="selectAvatar(${av.id}, ${av.reqLvl}, '${av.reqItem || ''}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}" class="relative aspect-square rounded-2xl cursor-pointer transition-transform btn-press ${scale} ${aura}">
+        <div onclick="openAvatarStudio(${av.id})" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); this.click();}" class="relative aspect-square rounded-2xl cursor-pointer transition-transform btn-press ${scale} ${aura}">
             <div class="w-full h-full rounded-2xl overflow-hidden ${isLocked ? 'locked-avatar' : ''}">
                 ${av.svg}
             </div>
@@ -1466,30 +1954,42 @@ function toggleTask(id) {
         const coinMult = getBoostMultiplier('coin');
         const finalXp = Math.floor(task.xp * xpMult);
         const finalCoins = Math.floor(task.xp * coinMult);
+        task.earnedXp = finalXp;
+        task.earnedCoins = finalCoins;
+
         state.xp += finalXp; state.coins += finalCoins; state.stats[task.category] += 1;
         state.todayStats.tasks += 1; state.todayStats.xp += finalXp;
         state.weeklyStats.tasks += 1; state.weeklyStats.xp += finalXp;
         updateHeatmap(finalXp);
         updateDailyStreak(); playSound('success'); showToast(`عاش! +${finalXp} XP وعملة`, 'success', true, localSnapshot);
-        trackProductivity(finalXp);
         triggerStoreEffect('task-complete');
     } else {
-        const xpMult = getBoostMultiplier('xp');
-        const coinMult = getBoostMultiplier('coin');
-        const finalXp = Math.floor(task.xp * xpMult);
-        const finalCoins = Math.floor(task.xp * coinMult);
-        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins);
+        const revXp = task.earnedXp !== undefined ? task.earnedXp : task.xp;
+        const revCoins = task.earnedCoins !== undefined ? task.earnedCoins : task.xp;
+
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins);
         state.stats[task.category] = Math.max(0, state.stats[task.category] - 1);
-        state.todayStats.tasks = Math.max(0, state.todayStats.tasks - 1); state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp);
-        state.weeklyStats.tasks = Math.max(0, state.weeklyStats.tasks - 1); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
-        updateHeatmap(-finalXp);
-        showToast('تم إلغاء إنجاز المهمة', 'info', true, localSnapshot); trackProductivity(-finalXp);
+        state.todayStats.tasks = Math.max(0, state.todayStats.tasks - 1); state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp);
+        state.weeklyStats.tasks = Math.max(0, state.weeklyStats.tasks - 1); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
+        updateHeatmap(-revXp);
+        showToast('تم إلغاء إنجاز المهمة', 'info', true, localSnapshot);
     }
     saveState(); renderTasks();
 }
 
 function deleteTask(id, event) {
-    event.stopPropagation(); const localSnapshot = saveSnapshot(); state.tasks = state.tasks.filter(t => t.id !== id);
+    event.stopPropagation(); const localSnapshot = saveSnapshot(); 
+    const task = state.tasks.find(t => t.id === id);
+    if (task && task.completed) {
+        const revXp = task.earnedXp !== undefined ? task.earnedXp : task.xp;
+        const revCoins = task.earnedCoins !== undefined ? task.earnedCoins : task.xp;
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins);
+        state.stats[task.category] = Math.max(0, state.stats[task.category] - 1);
+        state.todayStats.tasks = Math.max(0, state.todayStats.tasks - 1); state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp);
+        state.weeklyStats.tasks = Math.max(0, state.weeklyStats.tasks - 1); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
+        updateHeatmap(-revXp);
+    }
+    state.tasks = state.tasks.filter(t => t.id !== id);
     saveState(); renderTasks(); showToast('تم حذف المهمة', 'info', true, localSnapshot);
 }
 
@@ -1726,31 +2226,35 @@ function confirmSaveSession(subjectId) {
     if (!subject) return;
 
     const totalMs = state.activeSession.elapsedMs;
-    const minutes = Math.floor(totalMs / 60000);
+    const rawMinutes = Math.floor(totalMs / 60000);
+    const focusMultiplier = getBoostMultiplier('focus');
+    const minutes = Math.floor(rawMinutes * focusMultiplier);
     
     if(!subject.history) subject.history = [];
     
     const todayStr = getLocalDateStr();
     
+    const finalXp = Math.floor((minutes * 2) * getBoostMultiplier('xp'));
+    const finalCoins = Math.floor((minutes * 1) * getBoostMultiplier('coin'));
+    
     subject.history.push({
         id: Date.now() + Math.floor(Math.random() * 1000),
         date: todayStr,
         minutes: minutes,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        earnedXp: finalXp,
+        earnedCoins: finalCoins
     });
     
     subject.totalMinutes += minutes;
     subject.lastStudied = new Date().toLocaleDateString('ar-EG');
     
-    const finalXp = Math.floor((minutes * 2) * getBoostMultiplier('xp'));
-    const finalCoins = Math.floor((minutes * 1) * getBoostMultiplier('coin'));
     state.xp += finalXp;
     state.coins += finalCoins;
     state.totalFocusMinutes += minutes;
     state.todayStats.focus += minutes;
     state.weeklyStats.focus += minutes;
     
-    trackProductivity(finalXp);
     updateHeatmap(finalXp);
     updateDailyStreak();
     
@@ -1959,6 +2463,32 @@ function renderRecentSessions() {
     lucide.createIcons({ root: container });
 }
 
+function _revertSessionTransaction(session) {
+    const revXp = session.earnedXp !== undefined ? session.earnedXp : session.minutes * 2;
+    const revCoins = session.earnedCoins !== undefined ? session.earnedCoins : session.minutes * 1;
+
+    state.totalFocusMinutes = Math.max(0, state.totalFocusMinutes - session.minutes);
+    
+    const todayStr = getLocalDateStr();
+    if (session.date === todayStr) {
+        state.todayStats.focus = Math.max(0, state.todayStats.focus - session.minutes);
+    }
+    
+    const sessionDate = new Date(session.date);
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    if (sessionDate >= sevenDaysAgo) {
+        state.weeklyStats.focus = Math.max(0, state.weeklyStats.focus - session.minutes);
+    }
+
+    state.xp = Math.max(0, state.xp - revXp);
+    state.coins = Math.max(0, state.coins - revCoins);
+
+    if (state.heatmapData[session.date]) {
+        state.heatmapData[session.date] = Math.max(0, state.heatmapData[session.date] - revXp);
+    }
+}
+
 function deleteSession(subjectId, sessionId) {
     if (!confirm('هل أنت متأكد من حذف هذه الجلسة؟ سيتم خصم الوقت والخبرة من الإحصائيات.')) return;
 
@@ -1969,39 +2499,11 @@ function deleteSession(subjectId, sessionId) {
     if (sessionIndex === -1) return;
 
     const session = subject.history[sessionIndex];
-    const minutes = session.minutes;
+    
+    _revertSessionTransaction(session);
 
     subject.history.splice(sessionIndex, 1);
-    subject.totalMinutes = Math.max(0, subject.totalMinutes - minutes);
-
-    state.totalFocusMinutes = Math.max(0, state.totalFocusMinutes - minutes);
-    
-    const todayStr = getLocalDateStr();
-    if (session.date === todayStr) {
-        state.todayStats.focus = Math.max(0, state.todayStats.focus - minutes);
-    }
-    
-    const sessionDate = new Date(session.date);
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    if (sessionDate >= sevenDaysAgo) {
-        state.weeklyStats.focus = Math.max(0, state.weeklyStats.focus - minutes);
-    }
-
-    const xpDeduct = minutes * 2;
-    const coinDeduct = minutes * 1;
-    state.xp = Math.max(0, state.xp - xpDeduct);
-    state.coins = Math.max(0, state.coins - coinDeduct);
-
-    if (state.heatmapData[session.date]) {
-        state.heatmapData[session.date] = Math.max(0, state.heatmapData[session.date] - xpDeduct);
-    }
-
-    const daysMap = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    const dayArabic = daysMap[sessionDate.getDay()];
-    if (state.productivity[dayArabic]) {
-        state.productivity[dayArabic] = Math.max(0, state.productivity[dayArabic] - xpDeduct);
-    }
+    subject.totalMinutes = Math.max(0, subject.totalMinutes - session.minutes);
 
     saveState();
     renderStudyTimeTable();
@@ -2029,13 +2531,26 @@ function editStudySubject(id) {
 }
 
 function deleteStudySubject(id) {
-    if (!confirm('هل أنت متأكد من حذف هذه المادة؟ سيتم مسح سجل وقتها بالكامل (لن تتأثر الخبرة المكتسبة مسبقاً).')) return;
+    if (!confirm('هل أنت متأكد من حذف هذه المادة؟ سيتم مسح سجل وقتها بالكامل وسيتم خصم الخبرة والوقت المرتبط بجلساتها.')) return;
+    
+    const subject = state.studySubjects.find(s => s.id === id);
+    if (subject && subject.history && Array.isArray(subject.history)) {
+        subject.history.forEach(session => {
+            _revertSessionTransaction(session);
+        });
+    }
+    
     state.studySubjects = state.studySubjects.filter(s => s.id !== id);
+    
     saveState();
     renderStudyTimeTable();
     renderRecentSessions();
+    renderHeatmap();
+    updateGlobalUI();
+    renderProductivityChart();
     renderStats();
-    showToast('تم حذف المادة', 'info');
+    
+    showToast('تم حذف المادة وجلساتها بنجاح', 'info');
 }
 
 function buyStoreItem(id) {
@@ -2065,6 +2580,7 @@ function buyStoreItem(id) {
         state.store.ownedItems.push(id);
         playSound('reward');
         showToast(`تم شراء ${item.title} بنجاح!`, 'success', true, localSnapshot);
+        if (item.type === 'avatar') renderProfile();
     } else {
         state.store.consumables.push({ instanceId: Date.now() + Math.random(), itemId: id });
         playSound('reward');
@@ -2111,7 +2627,7 @@ function deactivateStoreItem(id) {
         state.store.activeTitle = null;
     } else if (item.type === 'avatar' && state.avatarId === item.avatarId) {
         const level = getLevel();
-        const availableStandard = AVATARS_DATA.filter(a => a.type === 'standard' && a.reqLvl <= level);
+        const availableStandard = AVATARS_DATA.filter(a => a.type === 'common' && a.reqLvl <= level);
         const highest = availableStandard.reduce((prev, current) => (prev.id > current.id) ? prev : current, availableStandard[0]);
         state.avatarId = highest ? highest.id : 1;
         renderProfile();
@@ -2160,7 +2676,10 @@ function consumeItem(instanceId) {
 }
 
 function openMysteryBox(boxItem, localSnapshot) {
-    const rand = Math.random();
+    const cryptoArray = new Uint32Array(1);
+    window.crypto.getRandomValues(cryptoArray);
+    const rand = cryptoArray[0] / (0xffffffff + 1);
+    
     let rewardText = '';
     
     if (boxItem.pool === 'small') {
@@ -2179,7 +2698,9 @@ function openMysteryBox(boxItem, localSnapshot) {
             state.coins += 1000; rewardText = '1000 ذهب';
         } else {
             const epicItems = STORE_CATALOG.filter(i => i.rarity === 'epic' && ['theme', 'title'].includes(i.type));
-            const rolledItem = epicItems[Math.floor(Math.random() * epicItems.length)];
+            const randItemIndexArray = new Uint32Array(1);
+            window.crypto.getRandomValues(randItemIndexArray);
+            const rolledItem = epicItems[randItemIndexArray[0] % epicItems.length];
             
             if (rolledItem && !state.store.ownedItems.includes(rolledItem.id)) {
                 state.store.ownedItems.push(rolledItem.id);
@@ -2198,74 +2719,225 @@ function openMysteryBox(boxItem, localSnapshot) {
     updateGlobalUI();
 }
 
-function renderStoreGrid() {
-    const grid = document.getElementById('ui-store-grid');
-    const emptyState = document.getElementById('ui-store-grid-empty');
-    if (!grid) return;
-
-    let items = STORE_CATALOG;
-    if (currentStoreCategory !== 'all') {
-        items = items.filter(i => i.category === currentStoreCategory);
+function getDailyStoreOffers() {
+    const today = new Date().toDateString();
+    let hash = 0;
+    for (let i = 0; i < today.length; i++) {
+        hash = ((hash << 5) - hash) + today.charCodeAt(i);
+        hash |= 0; 
     }
+    const rng = function(seed) {
+        let t = seed += 0x6D2B79F5;
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+    
+    let currentSeed = hash;
+    const nextRandom = () => {
+        currentSeed++;
+        return rng(currentSeed);
+    };
 
-    if (items.length === 0) {
-        grid.innerHTML = '';
-        if (emptyState) {
-            emptyState.classList.remove('hidden');
-            emptyState.classList.add('block');
-        }
-        return;
-    } else {
-        if (emptyState) {
-            emptyState.classList.add('hidden');
-            emptyState.classList.remove('block');
-        }
-    }
-
-    grid.innerHTML = items.map(item => {
-        const isOwned = state.store.ownedItems.includes(item.id);
-        const canAfford = state.coins >= item.cost;
+    const availableItems = STORE_CATALOG.filter(item => {
         const isPermanent = ['theme', 'title', 'avatar', 'effect'].includes(item.type);
-        
-        let isActive = false;
-        if (item.type === 'theme') isActive = state.store.activeTheme === item.id;
-        if (item.type === 'title') isActive = state.store.activeTitle === item.id;
-        if (item.type === 'avatar') isActive = state.avatarId === item.avatarId;
-        if (item.type === 'effect') isActive = state.store.activeEffects.includes(item.id);
+        return !(isPermanent && state.store && state.store.ownedItems.includes(item.id));
+    });
 
-        let btnHtml = '';
-        if (isOwned && isPermanent) {
-            if (isActive) {
-                btnHtml = `<button onclick="deactivateStoreItem('${item.id}')" class="w-full py-2 min-h-[44px] rounded-xl bg-white/10 text-white font-bold text-sm btn-press">إلغاء التفعيل</button>`;
-            } else {
-                btnHtml = `<button onclick="activateStoreItem('${item.id}')" class="w-full py-2 min-h-[44px] rounded-xl bg-blue-500/20 text-blue-400 font-bold text-sm btn-press">تفعيل</button>`;
-            }
-        } else {
-            btnHtml = `<button onclick="buyStoreItem('${item.id}')" class="w-full py-2 min-h-[44px] rounded-xl ${canAfford ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30' : 'bg-white/5 text-white/30 cursor-not-allowed'} font-bold text-sm flex justify-center items-center gap-2 btn-press">
-                شراء بـ ${item.cost} <i data-lucide="coins" class="w-4 h-4"></i>
-            </button>`;
+    if (availableItems.length === 0) return { featured: STORE_CATALOG[0], deals: [] };
+
+    const featuredIndex = Math.floor(nextRandom() * availableItems.length);
+    const featured = availableItems[featuredIndex];
+    
+    const deals = [];
+    const tempItems = [...availableItems];
+    tempItems.splice(featuredIndex, 1);
+    
+    for(let i=0; i<3; i++) {
+        if(tempItems.length === 0) break;
+        const idx = Math.floor(nextRandom() * tempItems.length);
+        deals.push(tempItems[idx]);
+        tempItems.splice(idx, 1);
+    }
+    
+    return { featured, deals };
+}
+
+function renderStoreFront() {
+    const featuredContainer = document.getElementById('ui-store-featured');
+    const dealsContainer = document.getElementById('ui-store-daily-deals');
+    if(!featuredContainer || !dealsContainer) return;
+
+    const { featured, deals } = getDailyStoreOffers();
+
+    if (featured) {
+        const canAfford = state.coins >= featured.cost;
+        featuredContainer.innerHTML = `
+            <div class="store-featured-card p-6 flex flex-col sm:flex-row items-center gap-6">
+                <div class="store-deal-badge">العرض المميز</div>
+                <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl store-card-icon-bg flex items-center justify-center shrink-0 rarity-${featured.rarity}">
+                    <i data-lucide="${featured.icon}" class="w-12 h-12 sm:w-16 sm:h-16 store-card-icon"></i>
+                </div>
+                <div class="flex-1 text-center sm:text-right">
+                    <h3 class="text-2xl font-black text-white mb-2">${featured.title}</h3>
+                    <p class="text-sm text-white/70 mb-6 leading-relaxed">${featured.desc}</p>
+                    <button onclick="buyStoreItem('${featured.id}')" class="w-full sm:w-auto px-8 py-3 min-h-[44px] rounded-xl ${canAfford ? 'bg-yellow-500 text-black hover:bg-yellow-400' : 'bg-white/5 text-white/30 cursor-not-allowed'} font-black text-sm flex justify-center items-center gap-2 btn-press transition-colors">
+                        شراء بـ ${featured.cost} <i data-lucide="coins" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    } else {
+        featuredContainer.innerHTML = '';
+    }
+
+    if (deals.length > 0) {
+        dealsContainer.innerHTML = deals.map(item => {
+            const canAfford = state.coins >= item.cost;
+            return `
+            <div class="store-card glass-panel p-4 rounded-2xl border border-white/5 rarity-${item.rarity}">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="w-12 h-12 rounded-xl store-card-icon-bg flex items-center justify-center shrink-0">
+                        <i data-lucide="${item.icon}" class="w-6 h-6 store-card-icon"></i>
+                    </div>
+                    <span class="text-[10px] font-bold bg-red-500/20 text-red-400 px-2 py-1 rounded-md border border-red-500/30">صفقة اليوم</span>
+                </div>
+                <h4 class="text-base font-bold text-white mb-1">${item.title}</h4>
+                <p class="text-[11px] text-white/60 leading-relaxed mb-4 flex-1">${item.desc}</p>
+                <button onclick="buyStoreItem('${item.id}')" class="w-full py-2 min-h-[44px] rounded-xl ${canAfford ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30' : 'bg-white/5 text-white/30 cursor-not-allowed'} font-bold text-sm flex justify-center items-center gap-2 btn-press">
+                    شراء بـ ${item.cost} <i data-lucide="coins" class="w-4 h-4"></i>
+                </button>
+            </div>`;
+        }).join('');
+    } else {
+        dealsContainer.innerHTML = '';
+    }
+    
+    lucide.createIcons({ root: featuredContainer });
+    lucide.createIcons({ root: dealsContainer });
+}
+
+function renderStoreGrid() {
+    const frontView = document.getElementById('ui-store-front');
+    const catalogView = document.getElementById('ui-store-catalog');
+    const rewardsView = document.getElementById('ui-store-rewards');
+    const invView = document.getElementById('ui-store-inventory-view');
+
+    [frontView, catalogView, rewardsView, invView].forEach(v => {
+        if (v) { v.classList.add('hidden'); v.classList.remove('flex'); }
+    });
+
+    if (currentStoreCategory === 'storefront') {
+        if (frontView) { frontView.classList.remove('hidden'); frontView.classList.add('flex'); }
+        return;
+    } else if (currentStoreCategory === 'catalog') {
+        if (catalogView) { catalogView.classList.remove('hidden'); catalogView.classList.add('flex'); }
+        
+        const grid = document.getElementById('ui-store-grid');
+        const emptyState = document.getElementById('ui-store-grid-empty');
+        if (!grid) return;
+
+        let items = STORE_CATALOG;
+        if (currentCatalogSubtab && currentCatalogSubtab !== 'all') {
+            items = items.filter(i => i.category === currentCatalogSubtab);
         }
 
-        return `
-        <div class="store-card glass-panel p-4 rounded-2xl border border-white/5 rarity-${item.rarity} ${isOwned && isPermanent ? 'owned' : ''} ${isActive ? 'active-item' : ''}">
-            <div class="flex items-start justify-between mb-3">
-                <div class="w-12 h-12 rounded-xl store-card-icon-bg flex items-center justify-center shrink-0">
-                    <i data-lucide="${item.icon}" class="w-6 h-6 store-card-icon"></i>
+        if (items.length === 0) {
+            grid.innerHTML = '';
+            if (emptyState) { emptyState.classList.remove('hidden'); emptyState.classList.add('block'); }
+            return;
+        } else {
+            if (emptyState) { emptyState.classList.add('hidden'); emptyState.classList.remove('block'); }
+        }
+
+        grid.innerHTML = items.map(item => {
+            const isOwned = state.store.ownedItems.includes(item.id);
+            const canAfford = state.coins >= item.cost;
+            const isPermanent = ['theme', 'title', 'avatar', 'effect'].includes(item.type);
+            
+            let isActive = false;
+            if (item.type === 'theme') isActive = state.store.activeTheme === item.id;
+            if (item.type === 'title') isActive = state.store.activeTitle === item.id;
+            if (item.type === 'avatar') isActive = state.avatarId === item.avatarId;
+            if (item.type === 'effect') isActive = state.store.activeEffects.includes(item.id);
+
+            let btnHtml = '';
+            if (isOwned && isPermanent) {
+                if (isActive) {
+                    btnHtml = `<button onclick="deactivateStoreItem('${item.id}')" class="w-full py-2 min-h-[56px] rounded-xl bg-white/10 text-white font-bold text-sm btn-press">إلغاء التفعيل</button>`;
+                } else {
+                    btnHtml = `<button onclick="activateStoreItem('${item.id}')" class="w-full py-2 min-h-[56px] rounded-xl bg-blue-500/20 text-blue-400 font-bold text-sm btn-press">تفعيل</button>`;
+                }
+            } else {
+                btnHtml = `<button onclick="buyStoreItem('${item.id}')" class="w-full py-2 min-h-[56px] rounded-xl ${canAfford ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30' : 'bg-white/5 text-white/30 cursor-not-allowed'} font-bold text-sm flex justify-center items-center gap-2 btn-press">
+                    شراء بـ ${item.cost} <i data-lucide="coins" class="w-4 h-4"></i>
+                </button>`;
+            }
+
+            return `
+            <div class="store-card glass-panel p-4 rounded-2xl border border-white/5 rarity-${item.rarity} ${isOwned && isPermanent ? 'owned' : ''} ${isActive ? 'active-item' : ''}">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="w-12 h-12 rounded-xl store-card-icon-bg flex items-center justify-center shrink-0">
+                        <i data-lucide="${item.icon}" class="w-6 h-6 store-card-icon"></i>
+                    </div>
+                    ${isOwned && isPermanent ? `<span class="text-[10px] font-bold bg-white/10 text-white/70 px-2 py-1 rounded-md">مملوك</span>` : ''}
                 </div>
-                ${isOwned && isPermanent ? `<span class="text-[10px] font-bold bg-white/10 text-white/70 px-2 py-1 rounded-md">مملوك</span>` : ''}
-            </div>
-            <h4 class="text-base font-bold text-white mb-1">${item.title}</h4>
-            <p class="text-[11px] text-white/60 leading-relaxed mb-4 flex-1">${item.desc}</p>
-            ${btnHtml}
-        </div>`;
-    }).join('');
-    lucide.createIcons({ root: grid });
+                <h4 class="text-base font-bold text-white mb-1">${item.title}</h4>
+                <p class="text-[11px] text-white/60 leading-relaxed mb-4 flex-1">${item.desc}</p>
+                ${btnHtml}
+            </div>`;
+        }).join('');
+        lucide.createIcons({ root: grid });
+        return;
+    } else if (currentStoreCategory === 'rewards') {
+        if (rewardsView) { rewardsView.classList.remove('hidden'); rewardsView.classList.add('flex'); }
+        updateRewardsUI();
+        return;
+    } else if (currentStoreCategory === 'inventory') {
+        if (invView) { invView.classList.remove('hidden'); invView.classList.add('flex'); }
+        renderInventoryList();
+        return;
+    }
+}
+
+function renderInventoryList() {
+    const invContainer = document.getElementById('ui-inventory-container');
+    const invEmpty = document.getElementById('ui-inventory-empty');
+    if (!invContainer) return;
+
+    if (!state.store.consumables || state.store.consumables.length === 0) {
+        invContainer.innerHTML = '';
+        if (invEmpty) { invEmpty.classList.remove('hidden'); invEmpty.classList.add('block'); }
+    } else {
+        if (invEmpty) { invEmpty.classList.add('hidden'); invEmpty.classList.remove('block'); }
+        invContainer.innerHTML = state.store.consumables.map(c => {
+            const item = STORE_CATALOG.find(i => i.id === c.itemId);
+            if (!item) return '';
+            return `
+            <div class="glass-panel p-3.5 min-h-[56px] rounded-2xl flex items-center justify-between border border-emerald-500/20 bg-emerald-500/5 group shadow-lg">
+                <div class="flex items-center gap-3 flex-1 overflow-hidden">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                        <i data-lucide="${item.icon}" class="w-5 h-5 text-emerald-400"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <h4 class="text-sm font-bold text-white leading-tight truncate pr-1">${escapeHTML(item.title)}</h4>
+                        <span class="text-[10px] text-emerald-400/70 truncate">${item.desc}</span>
+                    </div>
+                </div>
+                <button onclick="consumeItem('${c.instanceId}')" class="px-4 py-2 min-h-[44px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 btn-press shrink-0 shadow-md">
+                    <i data-lucide="play" class="w-3.5 h-3.5"></i> استخدام
+                </button>
+            </div>`;
+        }).join('');
+    }
+    lucide.createIcons({ root: invContainer });
 }
 
 function renderStore() {
     const storeCoinsMagicEl = document.getElementById('ui-store-coins-magic');
     if (storeCoinsMagicEl) storeCoinsMagicEl.innerText = state.coins;
     
+    renderStoreFront();
     renderStoreGrid();
     
     const activeBoostsContainer = document.getElementById('ui-active-boosts-container');
@@ -2490,7 +3162,7 @@ function calculateAdvancedStats() {
 
     let longestDayMins = 0;
     for (let d in minutesByDate) {
-        if (minutesByDate[d] > longestDayMins) longestDayMins = longestDayMins;
+        if (minutesByDate[d] > longestDayMins) longestDayMins = minutesByDate[d];
     }
 
     let bestTime = '--';
@@ -2680,7 +3352,7 @@ function renderProductivityChart() {
     }
 
     container.innerHTML = `
-    <div class="flex items-end justify-between h-40 gap-2 sm:gap-3 px-2 w-full pt-4">
+    <div class="flex items-end justify-between h-40 gap-2 sm:gap-3 px-2 w-full pt-4 min-w-[320px]">
         ${daysData.map(data => {
             const heightPercent = Math.max((data.mins / maxMins) * 100, 8); 
             return `
@@ -2780,7 +3452,10 @@ function advanceWeek() {
     state.weeklyStats = { tasks: 0, xp: 0, focus: 0 };
     state.productivity = { 'السبت': 0, 'الأحد': 0, 'الإثنين': 0, 'الثلاثاء': 0, 'الأربعاء': 0, 'الخميس': 0, 'الجمعة': 0 };
 
-    state.currentWeek += 1; 
+    if (!state.store.tickets) state.store.tickets = { scholar: 0, elite: 0, mythic: 0 };
+    state.store.tickets.elite++;
+
+    state.currentWeek += 1;
     
     const finalXp = Math.floor(200 * getBoostMultiplier('xp'));
     const finalCoins = Math.floor(200 * getBoostMultiplier('coin'));
@@ -2929,14 +3604,18 @@ function toggleScheduleItem(id) {
     if(item.completed) { 
         const finalXp = Math.floor(20 * getBoostMultiplier('xp'));
         const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
+        item.earnedXp = finalXp;
+        item.earnedCoins = finalCoins;
+
         state.xp += finalXp; state.coins += finalCoins; 
         state.todayStats.xp += finalXp; state.weeklyStats.xp += finalXp;
         playSound('pop'); showToast(`+${finalXp} XP ، استمر يا بطل!`, 'success', true, localSnapshot); 
     } else { 
-        const finalXp = Math.floor(20 * getBoostMultiplier('xp'));
-        const finalCoins = Math.floor(10 * getBoostMultiplier('coin'));
-        state.xp = Math.max(0, state.xp - finalXp); state.coins = Math.max(0, state.coins - finalCoins); 
-        state.todayStats.xp = Math.max(0, state.todayStats.xp - finalXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - finalXp);
+        const revXp = item.earnedXp !== undefined ? item.earnedXp : 20;
+        const revCoins = item.earnedCoins !== undefined ? item.earnedCoins : 10;
+
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins); 
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
         showToast('تم التراجع', 'info', true, localSnapshot);
     }
     saveState(); renderScheduleItems();
@@ -2944,6 +3623,14 @@ function toggleScheduleItem(id) {
 
 function deleteScheduleItem(id, e) {
     e.stopPropagation(); const localSnapshot = saveSnapshot();
+    const list = activeScheduleTab === 'lessons' ? state.lessons : state.studyPlan;
+    const item = list.find(i => i.id === id);
+    if (item && item.completed) {
+        const revXp = item.earnedXp !== undefined ? item.earnedXp : 20;
+        const revCoins = item.earnedCoins !== undefined ? item.earnedCoins : 10;
+        state.xp = Math.max(0, state.xp - revXp); state.coins = Math.max(0, state.coins - revCoins); 
+        state.todayStats.xp = Math.max(0, state.todayStats.xp - revXp); state.weeklyStats.xp = Math.max(0, state.weeklyStats.xp - revXp);
+    }
     if (activeScheduleTab === 'lessons') state.lessons = state.lessons.filter(i => i.id !== id);
     else state.studyPlan = state.studyPlan.filter(i => i.id !== id);
     saveState(); renderScheduleItems(); showToast('تم الحذف', 'info', true, localSnapshot);
@@ -3510,7 +4197,7 @@ function openErrorDetail(id) {
     }
 
     if (elSeverity) {
-        const sevMap = { 'low': 'بسيطة', 'medium': 'متوسطة', 'high': 'حرجة 🔥' };
+        const sevMap = { 'low': 'بسيطة', 'medium': 'متوسطة', 'high': 'مهمة 🔥' };
         elSeverity.innerText = sevMap[err.severity] || 'متوسطة';
     }
 
@@ -4092,13 +4779,6 @@ window.onload = () => {
     updateQuote();
     initStoreBoostInterval();
     initErrorBank();
-    
-    if (Object.values(state.productivity).reduce((a, b) => a + b, 0) === 0) {
-        const today = new Date().getDay();
-        const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-        for(let i=0; i<=today; i++) { if (Math.random() > 0.3) state.productivity[days[i]] = Math.floor(Math.random() * 100) + 20; }
-        saveState();
-    }
 
     switchTab('dashboard');
     selectedScheduleDay = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'][new Date().getDay()];
