@@ -1099,3 +1099,197 @@ main,
     from { transform: translateY(100%); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+/* ==========================================================================\n   STORE MOBILE REPAIR — stable layout for narrow touch screens\n   ========================================================================== */
+.glass-panel { contain: none; }
+
+#view-store,
+#view-store * { box-sizing: border-box; }
+
+#view-store { min-width: 0; width: 100%; padding-bottom: calc(1.5rem + var(--nav-height)); }
+
+#view-store .glass-panel,
+#view-store .store-featured-card,
+#view-store .store-card { min-width: 0; }
+
+#ui-store-categories,
+#ui-catalog-subtabs {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-inline: 2px;
+}
+
+#ui-store-categories::-webkit-scrollbar,
+#ui-catalog-subtabs::-webkit-scrollbar { display: none; }
+
+#ui-store-categories > button,
+#ui-catalog-subtabs > button {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    white-space: nowrap;
+}
+
+#ui-store-front.hidden,
+#ui-store-catalog.hidden,
+#ui-store-rewards.hidden,
+#ui-store-inventory-view.hidden { display: none !important; }
+
+#ui-store-front:not(.hidden),
+#ui-store-catalog:not(.hidden),
+#ui-store-rewards:not(.hidden),
+#ui-store-inventory-view:not(.hidden) { display: flex; }
+
+#ui-store-grid,
+#ui-store-daily-deals,
+#ui-active-boosts-container,
+#ui-inventory-container {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.store-featured-card { min-height: 220px; isolation: isolate; }
+.store-card { min-height: 224px; height: auto; isolation: isolate; contain: none; }
+
+.store-card > *,
+.store-featured-card > *,
+.store-card h4,
+.store-card p,
+.store-card button,
+.store-featured-card h3,
+.store-featured-card p,
+.store-featured-card button {
+    position: relative;
+    z-index: 1;
+}
+
+.store-card h4,
+.store-card p,
+.store-featured-card h3,
+.store-featured-card p {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.store-card h4,
+.store-featured-card h3 { line-height: 1.55; }
+.store-card p,
+.store-featured-card p { line-height: 1.8; }
+
+.store-card button,
+.store-featured-card button {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    white-space: normal;
+}
+
+#ui-store-featured,
+#ui-store-daily-deals-container,
+#ui-store-grid-empty { min-width: 0; width: 100%; }
+
+@media (max-width: 767px) {
+    main { padding-inline: 0.75rem !important; }
+    #view-store { gap: 1rem !important; }
+
+    #view-store > .glass-panel:first-child {
+        padding: 1rem !important;
+        border-radius: 1.25rem !important;
+    }
+
+    #view-store > .glass-panel:first-child > .flex { align-items: center; gap: 0.75rem; }
+    #view-store > .glass-panel:first-child h2 { font-size: 1.125rem; line-height: 1.45; }
+    #view-store > .glass-panel:first-child p { max-width: 15rem; line-height: 1.7; }
+    #view-store > .glass-panel:first-child .bg-black\\/40 { flex: 0 0 auto; padding-inline: 0.7rem !important; }
+
+    #ui-store-categories,
+    #ui-catalog-subtabs { gap: 0.5rem !important; padding-bottom: 0.35rem; }
+    #ui-store-categories > button,
+    #ui-catalog-subtabs > button { min-height: 44px !important; padding-inline: 0.8rem !important; }
+
+    #ui-store-grid,
+    #ui-store-daily-deals,
+    #ui-active-boosts-container,
+    #ui-inventory-container { grid-template-columns: minmax(0, 1fr) !important; gap: 0.75rem !important; }
+
+    .store-featured-card {
+        min-height: 0;
+        padding: 1rem !important;
+        gap: 0.9rem !important;
+        align-items: stretch !important;
+    }
+
+    .store-featured-card > .store-card-icon-bg {
+        width: 4rem !important;
+        height: 4rem !important;
+        align-self: flex-start;
+    }
+
+    .store-featured-card > .flex-1 { width: 100%; text-align: right !important; }
+    .store-featured-card h3 { font-size: 1rem !important; margin-bottom: 0.25rem !important; }
+    .store-featured-card p { font-size: 0.75rem !important; margin-bottom: 0.85rem !important; }
+    .store-deal-badge { top: 0.65rem; right: 0.65rem; font-size: 0.625rem; padding-inline: 0.55rem; }
+
+    .store-card { min-height: 0; padding: 0.9rem !important; border-radius: 1.1rem !important; }
+    .store-card > div:first-child { margin-bottom: 0.65rem !important; }
+    .store-card h4 { font-size: 0.9rem !important; margin-bottom: 0.2rem !important; }
+    .store-card p { font-size: 0.72rem !important; margin-bottom: 0.8rem !important; min-height: 2.6rem; }
+    .store-card button { min-height: 48px !important; padding-inline: 0.75rem !important; font-size: 0.75rem !important; }
+
+    nav.fixed.bottom-4 {
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        overscroll-behavior-inline: contain;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    nav.fixed.bottom-4::-webkit-scrollbar { display: none; }
+    nav.fixed.bottom-4 button {
+        flex: 0 0 58px !important;
+        width: 58px !important;
+        min-width: 58px !important;
+        max-width: 58px !important;
+    }
+    nav.fixed.bottom-4 button span { white-space: nowrap; font-size: 0.58rem !important; }
+}
+
+@media (min-width: 768px) {
+    #ui-store-grid,
+    #ui-store-daily-deals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.brand-fallback {
+    display: none;
+    width: clamp(7rem, 24vmin, 12rem);
+    height: clamp(7rem, 24vmin, 12rem);
+    align-items: center;
+    justify-content: center;
+    border-radius: 2rem;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff;
+    font-size: clamp(3rem, 12vmin, 6rem);
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 1rem 4rem rgba(37, 99, 235, 0.35);
+}
+
+.brand-fallback.is-visible { display: grid; }
+
+@media (prefers-reduced-motion: reduce) {
+    .store-card,
+    .store-featured-card,
+    .store-card.rarity-legendary::after,
+    .store-card.rarity-mythic::before { animation: none !important; transition: none !important; }
+}
