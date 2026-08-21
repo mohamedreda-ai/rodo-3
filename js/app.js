@@ -1445,6 +1445,15 @@ function showToast(message, type = 'info', allowUndo = false, localSnapshot = nu
     }, 4000);
 }
 
+function keepActiveNavVisible(tabId) {
+    const activeNav = document.getElementById(`nav-${tabId}`);
+    const navBar = activeNav ? activeNav.closest('nav') : null;
+    if (!activeNav || !navBar || window.innerWidth > 767) return;
+    requestAnimationFrame(() => {
+        activeNav.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    });
+}
+
 function switchTab(tabId) {
     const navs = ['dashboard', 'goals', 'focus', 'store', 'stats', 'profile', 'schedule', 'exams', 'weaknesses'];
     navs.forEach(nav => {
@@ -1478,6 +1487,7 @@ function switchTab(tabId) {
     
     const navBar = document.querySelector('nav');
     if(navBar) lucide.createIcons({ root: navBar });
+    keepActiveNavVisible(tabId);
 }
 
 function checkAchievements() {
