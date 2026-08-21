@@ -24,7 +24,8 @@
     
     <!-- Premium Splash Screen -->
     <div id="splash-screen" class="fixed inset-0 z-[9999] bg-[#050505] flex flex-col items-center justify-center w-full h-full">
-        <img src="assets/images/logo.webp" alt="Rodo Logo" width="128" height="128" class="w-28 h-28 sm:w-32 sm:h-32 object-contain mb-8">
+        <img src="assets/images/logo.webp" alt="Rodo Logo" width="128" height="128" class="w-28 h-28 sm:w-32 sm:h-32 object-contain mb-8" onerror="this.hidden=true;this.nextElementSibling.classList.add('is-visible');">
+        <span class="brand-fallback" aria-hidden="true">R</span>
         <p class="text-xl sm:text-2xl font-semibold tracking-widest text-white/90">العبها صح</p>
     </div>
 
